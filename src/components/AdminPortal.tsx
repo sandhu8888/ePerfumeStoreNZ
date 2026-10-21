@@ -536,7 +536,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 {/* Header Strip */}
                 <div className="flex justify-between items-start pb-6 border-b border-stone-200">
                   <div>
-                    <div className="text-2xl font-serif font-bold text-stone-950">
+                    <img
+                      src="/assets/aistudio/Firefly_Gemini_Flash_white_background_464260__1__221bda0c.png"
+                      alt="E-Perfume Store"
+                      className="h-16 w-auto object-contain mb-2"
+                    />
+                    <div className="text-xl font-serif font-bold text-stone-950">
                       ePerfume Store NZ Limited
                     </div>
                     <div className="text-stone-600 mt-1">

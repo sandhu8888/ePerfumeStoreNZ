@@ -127,8 +127,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         {confirmedOrder ? (
           <div className="p-6 sm:p-8 space-y-6" id="printable-invoice">
             <div className="flex flex-col items-center text-center space-y-3 pb-6 border-b border-stone-200">
-              <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                <CheckCircle className="w-8 h-8" />
+              <img
+                src="/assets/aistudio/Firefly_Gemini_Flash_white_background_464260__1__221bda0c.png"
+                alt="E-Perfume Store"
+                className="h-14 w-auto object-contain mix-blend-multiply mb-1"
+              />
+              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                <CheckCircle className="w-6 h-6" />
               </div>
               <h3 className="text-2xl font-serif font-bold text-stone-900">
                 Order #{confirmedOrder.orderNumber} Confirmed!
