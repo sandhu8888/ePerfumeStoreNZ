@@ -19,7 +19,8 @@ import {
   Building2,
   DollarSign,
   TrendingUp,
-  Tag
+  Tag,
+  Upload
 } from 'lucide-react';
 import { PerfumeIllustration } from './PerfumeIllustration';
 
@@ -62,6 +63,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isCreatingProduct, setIsCreatingProduct] = useState(false);
+  // Gallery upload state
+  const [isAddingGalleryItem, setIsAddingGalleryItem] = useState(false);
+  const [galleryUploadPreview, setGalleryUploadPreview] = useState<string>('');
+  const [newGalleryTitle, setNewGalleryTitle] = useState('');
+  const [newGallerySubtitle, setNewGallerySubtitle] = useState('');
+  const [newGalleryTag, setNewGalleryTag] = useState('');
+  const [newGalleryCategory, setNewGalleryCategory] = useState<ProductCategory | 'all'>('all');
+  const [productImageUpload, setProductImageUpload] = useState<string>('');
 
   // Selected Order for Invoice Generator
   const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<Order>(orders[0] || null);
@@ -687,48 +696,261 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
           {/* TAB 4: GALLERY & HERO BANNERS */}
           {activeTab === 'gallery' && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h3 className="text-base font-serif font-bold text-stone-900">
-                    Storefront Gallery & Hero Visuals
+                    Storefront Gallery &amp; Showcase Visuals
                   </h3>
                   <p className="text-xs text-stone-500">
-                    Update hero banners, feature showcases, and promotional photos
+                    Upload images from your device or specify URLs to update homepage showcases
                   </p>
                 </div>
+                <button
+                  onClick={() => {
+                    setIsAddingGalleryItem(true);
+                    setGalleryUploadPreview('');
+                    setNewGalleryTitle('');
+                    setNewGallerySubtitle('');
+                    setNewGalleryTag('Boutique Showcase');
+                    setNewGalleryCategory('all');
+                  }}
+                  className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Upload New Gallery Image</span>
+                </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {gallery.map((item, index) => (
-                  <div key={item.id} className="p-4 bg-white rounded-xl border border-stone-200 shadow-xs space-y-3">
-                    <div className="h-36 rounded-lg overflow-hidden bg-stone-100 border border-stone-200 relative">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-stone-900/80 text-[10px] text-amber-300 font-mono">
-                        {item.tag}
+              {/* Add New Gallery Item Card / Form */}
+              {isAddingGalleryItem && (
+                <div className="p-5 bg-white rounded-xl border border-stone-300 shadow-sm space-y-4 animate-fadeIn">
+                  <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                    <span className="font-serif font-bold text-stone-900 text-sm">
+                      Upload New Image to Store Gallery
+                    </span>
+                    <button
+                      onClick={() => setIsAddingGalleryItem(false)}
+                      className="p-1 text-stone-400 hover:text-stone-900"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Left: File Picker & Preview */}
+                    <div className="space-y-3">
+                      <label className="block text-stone-700 font-medium">Select Image File from Device *</label>
+                      <div className="border-2 border-dashed border-stone-300 rounded-xl p-4 text-center hover:border-amber-500 transition-colors bg-stone-50">
+                        {galleryUploadPreview ? (
+                          <div className="space-y-2">
+                            <img
+                              src={galleryUploadPreview}
+                              alt="Upload Preview"
+                              className="h-40 w-full object-cover rounded-lg border border-stone-200"
+                            />
+                            <label className="inline-block px-3 py-1 bg-stone-900 text-white rounded text-xs cursor-pointer hover:bg-stone-800">
+                              Choose Different File
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onloadend = () => setGalleryUploadPreview(reader.result as string);
+                                    reader.readAsDataURL(file);
+                                  }
+                                }}
+                              />
+                            </label>
+                          </div>
+                        ) : (
+                          <label className="cursor-pointer flex flex-col items-center justify-center py-6 space-y-2">
+                            <Upload className="w-8 h-8 text-amber-700" />
+                            <span className="text-xs font-semibold text-stone-900">
+                              Click to browse and upload photo
+                            </span>
+                            <span className="text-[11px] text-stone-400">
+                              PNG, JPG, WEBP from your computer or phone
+                            </span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onloadend = () => setGalleryUploadPreview(reader.result as string);
+                                  reader.readAsDataURL(file);
+                                }
+                              }}
+                            />
+                          </label>
+                        )}
                       </div>
                     </div>
-                    <div>
-                      <div className="font-serif font-semibold text-stone-900">{item.title}</div>
-                      <p className="text-xs text-stone-500 line-clamp-2 mt-0.5">{item.subtitle}</p>
+
+                    {/* Right: Metadata */}
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-stone-700 font-medium mb-1">Title *</label>
+                        <input
+                          type="text"
+                          value={newGalleryTitle}
+                          onChange={(e) => setNewGalleryTitle(e.target.value)}
+                          placeholder="e.g. Royal Naseem Oud Flacons"
+                          className="w-full px-3 py-2 border border-stone-300 rounded-lg text-stone-900"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-stone-700 font-medium mb-1">Subtitle / Description</label>
+                        <input
+                          type="text"
+                          value={newGallerySubtitle}
+                          onChange={(e) => setNewGallerySubtitle(e.target.value)}
+                          placeholder="e.g. Handcrafted perfume flacons imported directly to Invercargill"
+                          className="w-full px-3 py-2 border border-stone-300 rounded-lg text-stone-900"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-stone-700 font-medium mb-1">Category</label>
+                          <select
+                            value={newGalleryCategory}
+                            onChange={(e) => setNewGalleryCategory(e.target.value as any)}
+                            className="w-full px-3 py-2 border border-stone-300 rounded-lg bg-white"
+                          >
+                            <option value="all">All Showcase</option>
+                            <option value="perfume-oil">Perfume Oils</option>
+                            <option value="home-freshener">Home Fresheners</option>
+                            <option value="for-men">For Men</option>
+                            <option value="for-women">For Women</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-stone-700 font-medium mb-1">Tag</label>
+                          <input
+                            type="text"
+                            value={newGalleryTag}
+                            onChange={(e) => setNewGalleryTag(e.target.value)}
+                            placeholder="e.g. Dubai Heritage"
+                            className="w-full px-3 py-2 border border-stone-300 rounded-lg text-stone-900"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
-                      <span className="text-stone-400 font-mono">Slot #{index + 1}</span>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-2 border-t border-stone-200">
+                    <button
+                      onClick={() => setIsAddingGalleryItem(false)}
+                      className="px-4 py-2 border border-stone-300 rounded-lg text-stone-700 hover:bg-stone-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      disabled={!galleryUploadPreview || !newGalleryTitle}
+                      onClick={() => {
+                        const newItem: GalleryItem = {
+                          id: `gal-${Date.now()}`,
+                          title: newGalleryTitle,
+                          subtitle: newGallerySubtitle || 'Authentic UAE perfume collection',
+                          tag: newGalleryTag || 'Showcase',
+                          image: galleryUploadPreview,
+                          category: newGalleryCategory
+                        };
+                        onUpdateGallery([...gallery, newItem]);
+                        setIsAddingGalleryItem(false);
+                      }}
+                      className="px-5 py-2 bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold rounded-lg disabled:opacity-50"
+                    >
+                      Save to Gallery
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Gallery Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {gallery.map((item, index) => (
+                  <div key={item.id} className="p-4 bg-white rounded-xl border border-stone-200 shadow-xs space-y-3 flex flex-col justify-between">
+                    <div>
+                      <div className="h-40 rounded-lg overflow-hidden bg-stone-100 border border-stone-200 relative group">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-stone-900/80 text-[10px] text-amber-300 font-mono">
+                          {item.tag}
+                        </div>
+                        {/* Hover Overlay with Upload Trigger */}
+                        <label className="absolute inset-0 bg-stone-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white cursor-pointer gap-1">
+                          <Upload className="w-5 h-5 text-amber-300" />
+                          <span className="text-[11px] font-semibold">Upload Replacement Photo</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                  const updated = [...gallery];
+                                  updated[index] = { ...item, image: reader.result as string };
+                                  onUpdateGallery(updated);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+
+                      <div className="mt-3">
+                        <div className="font-serif font-semibold text-stone-900 text-sm">{item.title}</div>
+                        <p className="text-xs text-stone-500 line-clamp-2 mt-0.5">{item.subtitle}</p>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
+                      {/* Direct Upload button */}
+                      <label className="text-amber-800 hover:text-amber-950 font-medium cursor-pointer inline-flex items-center gap-1">
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload File</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => {
+                                const updated = [...gallery];
+                                updated[index] = { ...item, image: reader.result as string };
+                                onUpdateGallery(updated);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+
                       <button
                         onClick={() => {
-                          const newUrl = prompt('Enter new image URL:', item.image);
-                          if (newUrl) {
-                            const updated = [...gallery];
-                            updated[index] = { ...item, image: newUrl };
+                          if (confirm(`Remove "${item.title}" from gallery?`)) {
+                            const updated = gallery.filter((_, i) => i !== index);
                             onUpdateGallery(updated);
                           }
                         }}
-                        className="text-amber-800 hover:text-amber-950 font-medium underline"
+                        className="text-stone-400 hover:text-rose-600 p-1 transition-colors"
+                        title="Delete gallery image"
                       >
-                        Change Image URL
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -987,12 +1209,43 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-stone-700 font-medium mb-1">Image URL</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-stone-700 font-medium">Fragrance Image (Upload or URL)</label>
+                    <label className="text-xs text-amber-800 hover:text-amber-950 font-semibold cursor-pointer inline-flex items-center gap-1">
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Upload Photo File</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => setProductImageUpload(reader.result as string);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
                   <input
                     name="image"
-                    defaultValue={editingProduct?.image || 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80'}
+                    value={productImageUpload || editingProduct?.image || ''}
+                    onChange={(e) => setProductImageUpload(e.target.value)}
+                    placeholder="https://... or upload photo above"
                     className="w-full px-3 py-2 border border-stone-300 rounded-lg font-mono text-[11px]"
                   />
+                  {productImageUpload && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <img
+                        src={productImageUpload}
+                        alt="Preview"
+                        className="w-12 h-12 object-cover rounded border border-stone-200"
+                      />
+                      <span className="text-[11px] text-emerald-700 font-medium">Photo file loaded ready to save</span>
+                    </div>
+                  )}
                 </div>
 
                 <div>

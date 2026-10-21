@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Product, ProductCategory } from '../types';
+import { Product, ProductCategory, GalleryItem } from '../types';
 import { ProductCard } from '../components/ProductCard';
 import { PerfumeIllustration } from '../components/PerfumeIllustration';
 import { STORE_INFO } from '../data/initialData';
 import {
   Sparkles,
-  ShieldCheck,
   Truck,
   Droplets,
   ArrowRight,
@@ -13,35 +12,41 @@ import {
   Phone,
   ChevronRight,
   Star,
-  ExternalLink
+  Image as ImageIcon
 } from 'lucide-react';
 
 interface HomePageProps {
   products: Product[];
+  gallery: GalleryItem[];
   onAddToCart: (product: Product) => void;
   onQuickView: (product: Product) => void;
   onNavigate: (tab: string, categoryFilter?: ProductCategory | 'all') => void;
-  onOpenLoyalty: () => void;
 }
 
 export const HomePage: React.FC<HomePageProps> = ({
   products,
+  gallery,
   onAddToCart,
   onQuickView,
-  onNavigate,
-  onOpenLoyalty
+  onNavigate
 }) => {
   const [activeCategory, setActiveCategory] = useState<ProductCategory | 'all'>('all');
+  const [activeGalleryTag, setActiveGalleryTag] = useState<string>('all');
 
   const filteredFeatured = products.filter((p) => {
     if (activeCategory === 'all') return true;
     return p.category === activeCategory;
   });
 
+  const filteredGallery = gallery.filter((item) => {
+    if (activeGalleryTag === 'all') return true;
+    return item.category === activeGalleryTag;
+  });
+
   return (
-    <div className="space-y-16 sm:space-y-24">
-      {/* 1. STOREFRONT HERO SECTION */}
-      <section className="relative overflow-hidden pt-8 pb-12 md:py-16 bg-gradient-to-b from-[#F5F1EB]/60 via-[#FAF8F5] to-transparent border-b border-stone-200/60">
+    <div className="space-y-16 sm:space-y-24 bg-white text-stone-900">
+      {/* 1. STOREFRONT HERO SECTION (Crisp White Canvas) */}
+      <section className="relative overflow-hidden pt-8 pb-12 md:py-16 bg-white border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             {/* Left Content (7 cols) */}
@@ -71,10 +76,10 @@ export const HomePage: React.FC<HomePageProps> = ({
               <div className="flex flex-wrap items-center gap-4 pt-2">
                 <button
                   onClick={() => onNavigate('products', 'all')}
-                  className="px-6 py-3.5 bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold text-sm rounded-xl flex items-center gap-2 transition-colors shadow-sm"
+                  className="px-6 py-3.5 bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm rounded-xl flex items-center gap-2 transition-colors shadow-xs"
                 >
                   <span>Explore UAE Collection</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 text-amber-400" />
                 </button>
                 <button
                   onClick={() => onNavigate('contact')}
@@ -86,7 +91,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
 
               {/* Editorial Trust Markers */}
-              <div className="pt-6 border-t border-stone-200/80 grid grid-cols-3 gap-4 text-xs text-stone-600">
+              <div className="pt-6 border-t border-stone-200 grid grid-cols-3 gap-4 text-xs text-stone-600">
                 <div>
                   <strong className="block font-serif text-lg font-bold text-stone-900">100%</strong>
                   <span>Alcohol-Free Oils</span>
@@ -104,13 +109,13 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             {/* Right Media Showcase (5 cols) */}
             <div className="lg:col-span-5">
-              <div className="relative rounded-2xl bg-gradient-to-br from-[#EFE9DF] to-[#E5DDD0] p-6 sm:p-8 border border-stone-300/80 shadow-lg">
+              <div className="relative rounded-2xl bg-stone-50 p-6 sm:p-8 border border-stone-200 shadow-sm">
                 <div className="relative">
                   {/* Hero Flacon Lead Product: Naseem Bushra Concentrated Perfume Oil */}
                   <PerfumeIllustration product={products[0]} size="lg" />
 
                   {/* Feature Highlight Card overlay */}
-                  <div className="mt-4 p-4 rounded-xl bg-white/95 backdrop-blur-xs border border-stone-200 shadow-sm flex items-center justify-between">
+                  <div className="mt-4 p-4 rounded-xl bg-white border border-stone-200 shadow-xs flex items-center justify-between">
                     <div>
                       <div className="text-[11px] text-amber-800 font-semibold uppercase tracking-wider">
                         Featured UAE Scent
@@ -159,10 +164,10 @@ export const HomePage: React.FC<HomePageProps> = ({
           {/* Card 1: Perfume Oils */}
           <div
             onClick={() => onNavigate('products', 'perfume-oil')}
-            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-amber-400/80 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-stone-100 text-stone-800 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
                 <Droplets className="w-6 h-6 text-amber-700" />
               </div>
               <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-amber-800 transition-colors">
@@ -172,7 +177,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 Authentic traditional Attars. 100% alcohol-free oils applied via crystal dropper wands for deep, all-day personal projection.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-amber-900">
+            <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-900">
               <span>View Perfume Oils</span>
               <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
             </div>
@@ -181,7 +186,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           {/* Card 2: For Men */}
           <div
             onClick={() => onNavigate('products', 'for-men')}
-            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-amber-400/80 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
           >
             <div>
               <div className="w-12 h-12 rounded-xl bg-stone-100 text-stone-900 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
@@ -194,7 +199,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 Commanding UAE compositions featuring smoky Cambodian agarwood, cardamoms, rich leather accords, and dark ambergris.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-amber-900">
+            <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-900">
               <span>View Men&apos;s Scents</span>
               <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
             </div>
@@ -203,10 +208,10 @@ export const HomePage: React.FC<HomePageProps> = ({
           {/* Card 3: For Women */}
           <div
             onClick={() => onNavigate('products', 'for-women')}
-            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-amber-400/80 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-stone-100 text-stone-800 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
                 <Star className="w-6 h-6 text-amber-700" />
               </div>
               <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-amber-800 transition-colors">
@@ -216,7 +221,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 Velvety Damask roses, sparkling white peaches, royal Arabian jasmine, and gourmand vanilla praline EDP sprays.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-amber-900">
+            <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-900">
               <span>View Women&apos;s Scents</span>
               <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
             </div>
@@ -225,7 +230,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           {/* Card 4: Home Air Fresheners */}
           <div
             onClick={() => onNavigate('products', 'home-freshener')}
-            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-amber-400/80 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
           >
             <div>
               <div className="w-12 h-12 rounded-xl bg-stone-100 text-stone-900 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
@@ -238,7 +243,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 300ml aerosol-free ambient room mists. Infuse your living room, linens, and curtains with authentic Dubai rose and bakhoor.
               </p>
             </div>
-            <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-amber-900">
+            <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-900">
               <span>View Home Fresheners</span>
               <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
             </div>
@@ -258,7 +263,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </h2>
           </div>
 
-          {/* Clean Segmented Filter Tabs (functional buttons with click handlers) */}
+          {/* Clean Segmented Filter Tabs */}
           <div className="flex items-center gap-1 p-1 bg-stone-100 rounded-lg overflow-x-auto">
             <button
               onClick={() => setActiveCategory('all')}
@@ -328,10 +333,10 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="mt-10 text-center">
           <button
             onClick={() => onNavigate('products', activeCategory)}
-            className="px-6 py-3 bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-semibold rounded-xl inline-flex items-center gap-2 transition-colors shadow-xs"
+            className="px-6 py-3 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-xl inline-flex items-center gap-2 transition-colors shadow-xs"
           >
             <span>View All {filteredFeatured.length} Products in Catalog</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-amber-400" />
           </button>
         </div>
       </section>
@@ -383,18 +388,96 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* 5. INVERCARGILL STORE SPOTLIGHT & VIP BANNER */}
+      {/* 5. VISUAL GALLERY SHOWCASE (With Uploaded Storefront Images) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl bg-amber-50/80 border border-amber-200 p-8 sm:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-7 space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-amber-100 text-amber-900 text-xs font-semibold">
-              <MapPin className="w-3.5 h-3.5" />
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 pb-4 border-b border-stone-200">
+          <div>
+            <div className="text-xs uppercase tracking-widest text-amber-800 font-semibold mb-1">
+              Visual Scent Showcase
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
+              ePerfume Boutique Gallery
+            </h2>
+          </div>
+
+          {/* Gallery Category Filter */}
+          <div className="flex items-center gap-1 p-1 bg-stone-100 rounded-lg text-xs">
+            <button
+              onClick={() => setActiveGalleryTag('all')}
+              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                activeGalleryTag === 'all' ? 'bg-white text-stone-900 shadow-xs' : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              All Showcase ({gallery.length})
+            </button>
+            <button
+              onClick={() => setActiveGalleryTag('perfume-oil')}
+              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                activeGalleryTag === 'perfume-oil' ? 'bg-white text-stone-900 shadow-xs' : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Perfume Oils
+            </button>
+            <button
+              onClick={() => setActiveGalleryTag('home-freshener')}
+              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                activeGalleryTag === 'home-freshener' ? 'bg-white text-stone-900 shadow-xs' : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              Home Sprays
+            </button>
+          </div>
+        </div>
+
+        {/* Gallery Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {filteredGallery.map((item) => (
+            <div
+              key={item.id}
+              className="group rounded-2xl overflow-hidden border border-stone-200 bg-white hover:shadow-md transition-all flex flex-col"
+            >
+              <div className="relative h-64 overflow-hidden bg-stone-100">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute top-3 left-3 px-2.5 py-1 rounded bg-stone-900/80 backdrop-blur-xs text-[11px] font-mono text-amber-300">
+                  {item.tag}
+                </div>
+              </div>
+              <div className="p-5 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-amber-800 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-stone-600 mt-1 leading-relaxed">
+                    {item.subtitle}
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-amber-900 font-semibold">
+                  <span className="capitalize">{item.category.replace('-', ' ')}</span>
+                  <span className="text-stone-400 group-hover:text-amber-800 transition-colors">View Details →</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 6. INVERCARGILL STORE SPOTLIGHT */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="rounded-3xl bg-stone-50 border border-stone-200 p-8 sm:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-8 space-y-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-stone-200 text-stone-900 text-xs font-semibold">
+              <MapPin className="w-3.5 h-3.5 text-amber-700" />
               <span>Invercargill Physical Boutique</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
               Visit Us at Shop 3/24 Leven Street, Invercargill
             </h2>
-            <p className="text-sm text-stone-700 leading-relaxed">
+            <p className="text-sm text-stone-700 leading-relaxed max-w-2xl">
               Step inside our physical boutique in Southland to experience olfactory consultations, sample authentic Naseem concentrates on testing strips, and take home pure Arabian luxury.
             </p>
             <div className="flex flex-wrap items-center gap-3 pt-2 text-xs text-stone-700">
@@ -402,14 +485,16 @@ export const HomePage: React.FC<HomePageProps> = ({
               <span>Mon–Fri 9:30 AM – 5:30 PM</span>
               <span className="text-stone-300">·</span>
               <span>Sat 10:00 AM – 5:00 PM</span>
+              <span className="text-stone-300">·</span>
+              <span>Sun 10:30 AM – 3:30 PM</span>
             </div>
             <div className="pt-2 flex flex-wrap gap-3">
               <button
                 onClick={() => onNavigate('contact')}
-                className="px-5 py-2.5 bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-semibold rounded-lg transition-colors flex items-center gap-2"
+                className="px-5 py-2.5 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-2"
               >
                 <span>View Store Map &amp; Directions</span>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4 text-amber-400" />
               </button>
               <a
                 href={STORE_INFO.whatsappUrl}
@@ -423,30 +508,22 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
           </div>
 
-          <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-amber-700" />
-              </div>
-              <div>
-                <h3 className="font-serif font-bold text-stone-900 text-base">ePerfume VIP Club</h3>
-                <p className="text-xs text-stone-500">Earn points on every New Zealand order</p>
-              </div>
+          <div className="lg:col-span-4 bg-white p-6 rounded-2xl border border-stone-200 shadow-xs space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-stone-100 text-stone-900 flex items-center justify-center">
+              <Truck className="w-5 h-5 text-amber-700" />
             </div>
+            <h3 className="font-serif font-bold text-stone-900 text-base">New Zealand Wide Shipping</h3>
             <p className="text-xs text-stone-600 leading-relaxed">
-              Earn 10 points per $1 NZD spent. Redeem points for instant $10, $25, or $60 vouchers on perfume oils, EDPs, and ambient home fresheners.
+              Every order is hand-packed and inspected at our Invercargill boutique. Free express delivery across New Zealand on orders over $75 NZD.
             </p>
-            <button
-              onClick={onOpenLoyalty}
-              className="w-full py-2.5 px-4 bg-amber-700 hover:bg-amber-800 text-white text-xs font-semibold rounded-lg transition-colors"
-            >
-              Join VIP Rewards / View My Points
-            </button>
+            <div className="pt-2 text-xs font-mono font-semibold text-amber-800">
+              Same-day dispatch for orders before 2:00 PM
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 6. SOCIAL MEDIA COMMUNITY HIGHLIGHTS */}
+      {/* 7. SOCIAL MEDIA COMMUNITY HIGHLIGHTS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="text-center max-w-xl mx-auto mb-8">
           <div className="text-xs uppercase tracking-widest text-amber-800 font-semibold mb-1">
@@ -465,7 +542,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             href={STORE_INFO.socials.tiktok}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-5 rounded-2xl bg-white border border-stone-200 hover:border-amber-400 hover:shadow-md transition-all text-center group flex flex-col items-center justify-center"
+            className="p-5 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all text-center group flex flex-col items-center justify-center"
           >
             <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center group-hover:bg-stone-900 group-hover:text-white transition-colors mb-2">
               <span className="font-bold text-xs">TT</span>
@@ -478,7 +555,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             href={STORE_INFO.socials.facebook}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-5 rounded-2xl bg-white border border-stone-200 hover:border-amber-400 hover:shadow-md transition-all text-center group flex flex-col items-center justify-center"
+            className="p-5 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all text-center group flex flex-col items-center justify-center"
           >
             <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors mb-2">
               <span className="font-bold text-xs">FB</span>
@@ -491,7 +568,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             href={STORE_INFO.socials.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-5 rounded-2xl bg-white border border-stone-200 hover:border-amber-400 hover:shadow-md transition-all text-center group flex flex-col items-center justify-center"
+            className="p-5 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all text-center group flex flex-col items-center justify-center"
           >
             <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center group-hover:bg-pink-600 group-hover:text-white transition-colors mb-2">
               <span className="font-bold text-xs">IG</span>
@@ -504,7 +581,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             href={STORE_INFO.socials.youtube}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-5 rounded-2xl bg-white border border-stone-200 hover:border-amber-400 hover:shadow-md transition-all text-center group flex flex-col items-center justify-center"
+            className="p-5 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all text-center group flex flex-col items-center justify-center"
           >
             <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-colors mb-2">
               <span className="font-bold text-xs">YT</span>

@@ -8,11 +8,11 @@ interface HeaderProps {
   onNavigate: (tab: string, categoryFilter?: ProductCategory | 'all') => void;
   cartCount: number;
   onOpenCart: () => void;
-  onOpenLoyalty: () => void;
-  onOpenAdmin: () => void;
+  onOpenLoyalty?: () => void;
+  onOpenAdmin?: () => void;
   onOpenGitHub: () => void;
   onSearchClick: () => void;
-  userPoints: number;
+  userPoints?: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -20,11 +20,8 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigate,
   cartCount,
   onOpenCart,
-  onOpenLoyalty,
-  onOpenAdmin,
   onOpenGitHub,
-  onSearchClick,
-  userPoints
+  onSearchClick
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
@@ -135,31 +132,10 @@ export const Header: React.FC<HeaderProps> = ({
               <Search className="w-5 h-5" />
             </button>
 
-            {/* VIP Rewards Club trigger */}
-            <button
-              onClick={onOpenLoyalty}
-              className="hidden lg:flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-amber-900 bg-amber-50 hover:bg-amber-100/80 border border-amber-200/80 rounded-lg transition-colors whitespace-nowrap shrink-0"
-              title="View your ePerfume VIP Points"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-              <span>VIP Rewards</span>
-              <span className="font-mono text-amber-800 font-semibold">({userPoints} pts)</span>
-            </button>
-
-            {/* Admin Portal Quick Switch */}
-            <button
-              onClick={onOpenAdmin}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors whitespace-nowrap shrink-0"
-              title="Shopify/WooCommerce Style Admin Portal"
-            >
-              <ShieldAlert className="w-3.5 h-3.5 text-stone-500" />
-              <span>Admin Portal</span>
-            </button>
-
             {/* GitHub & Vercel Linking Button */}
             <button
               onClick={onOpenGitHub}
-              className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-700 hover:text-stone-950 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors whitespace-nowrap shrink-0"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-stone-700 hover:text-stone-950 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors whitespace-nowrap shrink-0"
               title="Link to GitHub & Deploy to Vercel"
             >
               <GitBranch className="w-3.5 h-3.5 text-amber-600" />
@@ -260,31 +236,6 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="pt-3 border-t border-stone-100 flex flex-col gap-2">
-            <button
-              onClick={() => {
-                onOpenLoyalty();
-                setMobileMenuOpen(false);
-              }}
-              className="flex items-center justify-between px-3 py-2 rounded-lg bg-amber-50 text-amber-900 text-xs font-medium"
-            >
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-amber-600" />
-                VIP Rewards Club
-              </span>
-              <span className="font-mono font-semibold">{userPoints} pts</span>
-            </button>
-
-            <button
-              onClick={() => {
-                onOpenAdmin();
-                setMobileMenuOpen(false);
-              }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-stone-100 text-stone-700 text-xs font-medium"
-            >
-              <ShieldAlert className="w-4 h-4 text-stone-500" />
-              Admin Portal (Inventory & Invoices)
-            </button>
-
             <button
               onClick={() => {
                 onOpenGitHub();

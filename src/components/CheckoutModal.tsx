@@ -8,8 +8,8 @@ interface CheckoutModalProps {
   onClose: () => void;
   items: CartItem[];
   onOrderPlaced: (order: Order) => void;
-  userPoints: number;
-  onDeductPoints: (points: number) => void;
+  userPoints?: number;
+  onDeductPoints?: (points: number) => void;
   onTrackOrder: (orderNumber: string) => void;
 }
 
@@ -18,8 +18,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onClose,
   items,
   onOrderPlaced,
-  userPoints,
-  onDeductPoints,
   onTrackOrder
 }) => {
   const [formData, setFormData] = useState<ShippingAddress>({
@@ -35,7 +33,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   });
 
   const [paymentMethod, setPaymentMethod] = useState<'bank_transfer' | 'card'>('bank_transfer');
-  const [useLoyaltyDiscount, setUseLoyaltyDiscount] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,21 +41,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
   const freeThreshold = STORE_INFO.shippingPolicy.freeThreshold;
   const shippingFee = subtotal >= freeThreshold ? 0 : STORE_INFO.shippingPolicy.flatRate;
-
-  // Loyalty discount logic: 500 points = $10 off, or 1000 points = $25 off
-  let loyaltyDiscountAmount = 0;
-  let pointsToDeduct = 0;
-  if (useLoyaltyDiscount && userPoints >= 500) {
-    if (userPoints >= 1000 && subtotal >= 30) {
-      loyaltyDiscountAmount = 25.00;
-      pointsToDeduct = 1000;
-    } else {
-      loyaltyDiscountAmount = 10.00;
-      pointsToDeduct = 500;
-    }
-  }
-
-  const finalTotal = Math.max(0, subtotal + shippingFee - loyaltyDiscountAmount);
+  const finalTotal = subtotal + shippingFee;
 
   const handleSubmitOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +59,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         items: items.map((i) => ({ product: i.product, quantity: i.quantity, price: i.product.price })),
         subtotal,
         shipping: shippingFee,
-        discount: loyaltyDiscountAmount,
+        discount: 0,
         total: finalTotal,
         paymentMethod,
         paymentStatus: paymentMethod === 'bank_transfer' ? 'Pending Verification' : 'Paid & Cleared',
@@ -84,10 +67,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         trackingNumber: trackingCode,
         courier: 'NZ Post Courier'
       };
-
-      if (pointsToDeduct > 0) {
-        onDeductPoints(pointsToDeduct);
-      }
 
       onOrderPlaced(newOrder);
       setConfirmedOrder(newOrder);
@@ -384,30 +363,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
             </div>
 
-            {/* Step 2: VIP Rewards Redemption */}
-            {userPoints >= 500 && (
-              <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="font-semibold text-amber-950">ePerfume VIP Loyalty Member Reward</div>
-                  <span className="font-mono text-amber-800 font-bold">{userPoints} Points Available</span>
-                </div>
-                <label className="flex items-center gap-2 cursor-pointer text-stone-800">
-                  <input
-                    type="checkbox"
-                    checked={useLoyaltyDiscount}
-                    onChange={(e) => setUseLoyaltyDiscount(e.target.checked)}
-                    className="rounded text-amber-600 focus:ring-amber-500"
-                  />
-                  <span>
-                    Apply <strong>{userPoints >= 1000 ? '1,000 pts ($25 NZD OFF)' : '500 pts ($10 NZD OFF)'}</strong> to this order
-                  </span>
-                </label>
-              </div>
-            )}
-
-            {/* Step 3: Payment Method Selection */}
+            {/* Step 2: Payment Method Selection */}
             <div className="space-y-3">
-              <div className="text-xs uppercase tracking-wider font-semibold text-amber-900 flex items-center gap-1.5">
+              <div className="text-xs uppercase tracking-wider font-semibold text-stone-900 flex items-center gap-1.5">
                 <Building2 className="w-4 h-4 text-amber-700" />
                 <span>2. Select Payment Gateway</span>
               </div>
@@ -496,12 +454,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   {shippingFee === 0 ? <strong className="text-emerald-700">FREE</strong> : `$${shippingFee.toFixed(2)} NZD`}
                 </span>
               </div>
-              {loyaltyDiscountAmount > 0 && (
-                <div className="flex justify-between text-emerald-700 font-semibold">
-                  <span>VIP Rewards Discount:</span>
-                  <span className="font-mono">-${loyaltyDiscountAmount.toFixed(2)} NZD</span>
-                </div>
-              )}
               <div className="pt-2 border-t border-stone-200 flex justify-between text-sm font-serif font-bold text-stone-900">
                 <span>Total Amount Payable:</span>
                 <span className="font-mono text-base text-amber-900">${finalTotal.toFixed(2)} NZD</span>

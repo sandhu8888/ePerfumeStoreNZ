@@ -12,7 +12,6 @@ import { ProductModal } from './components/ProductModal';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { OrderTrackingModal } from './components/OrderTrackingModal';
-import { LoyaltyModal } from './components/LoyaltyModal';
 import { AdminPortal } from './components/AdminPortal';
 import { GitHubModal } from './components/GitHubModal';
 import { HomePage } from './pages/HomePage';
@@ -59,7 +58,6 @@ export default function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [trackingOrderNumber, setTrackingOrderNumber] = useState('');
-  const [isLoyaltyOpen, setIsLoyaltyOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isGitHubOpen, setIsGitHubOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
@@ -195,11 +193,6 @@ export default function App() {
     }));
   };
 
-  const handleRedeemRewardInModal = (points: number, discountValue: number) => {
-    handleDeductPoints(points);
-    showToast(`Redeemed ${points} points for $${discountValue} NZD Discount!`);
-  };
-
   const handleOpenTrackingFromAnywhere = (orderNum?: string) => {
     if (orderNum) {
       setTrackingOrderNumber(orderNum);
@@ -243,7 +236,7 @@ export default function App() {
   const cartTotalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-amber-200">
+    <div className="min-h-screen flex flex-col bg-white text-stone-900 selection:bg-stone-200">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-stone-900 text-white text-xs px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 border border-stone-800 animate-fadeIn">
@@ -252,28 +245,25 @@ export default function App() {
         </div>
       )}
 
-      {/* Main Top Header (3-Zone Contract) */}
+      {/* Main Top Header (Clean Customer Navigation) */}
       <Header
         activeTab={activeTab}
         onNavigate={handleNavigate}
         cartCount={cartTotalItems}
         onOpenCart={() => setIsCartOpen(true)}
-        onOpenLoyalty={() => setIsLoyaltyOpen(true)}
-        onOpenAdmin={() => setIsAdminOpen(true)}
         onOpenGitHub={() => setIsGitHubOpen(true)}
         onSearchClick={() => setIsSearchOpen(true)}
-        userPoints={loyaltyMember.points}
       />
 
       {/* Active Page View */}
-      <main className="flex-1">
+      <main className="flex-1 bg-white">
         {activeTab === 'home' && (
           <HomePage
             products={products}
+            gallery={gallery}
             onAddToCart={handleAddToCart}
             onQuickView={(p) => setQuickViewProduct(p)}
             onNavigate={handleNavigate}
-            onOpenLoyalty={() => setIsLoyaltyOpen(true)}
           />
         )}
 
@@ -291,11 +281,10 @@ export default function App() {
         {activeTab === 'contact' && <ContactPage />}
       </main>
 
-      {/* Footer */}
+      {/* Footer (Admin Portal in bottom) */}
       <Footer
         onNavigate={handleNavigate}
         onOpenTracking={() => handleOpenTrackingFromAnywhere()}
-        onOpenLoyalty={() => setIsLoyaltyOpen(true)}
         onOpenAdmin={() => setIsAdminOpen(true)}
         onOpenGitHub={() => setIsGitHubOpen(true)}
       />
@@ -392,14 +381,6 @@ export default function App() {
         onClose={() => setIsTrackingOpen(false)}
         orders={orders}
         initialOrderNumber={trackingOrderNumber}
-      />
-
-      {/* Loyalty Modal */}
-      <LoyaltyModal
-        isOpen={isLoyaltyOpen}
-        onClose={() => setIsLoyaltyOpen(false)}
-        member={loyaltyMember}
-        onRedeemReward={handleRedeemRewardInModal}
       />
 
       {/* Product Quick View / Detail Modal */}

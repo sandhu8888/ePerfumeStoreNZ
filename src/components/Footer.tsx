@@ -7,7 +7,7 @@ import { ProductCategory } from '../types';
 interface FooterProps {
   onNavigate: (tab: string, categoryFilter?: ProductCategory | 'all') => void;
   onOpenTracking: () => void;
-  onOpenLoyalty: () => void;
+  onOpenLoyalty?: () => void;
   onOpenAdmin: () => void;
   onOpenGitHub: () => void;
 }
@@ -15,7 +15,6 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({
   onNavigate,
   onOpenTracking,
-  onOpenLoyalty,
   onOpenAdmin,
   onOpenGitHub
 }) => {
@@ -197,11 +196,6 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <button onClick={onOpenTracking} className="hover:text-amber-300 transition-colors">
                   Track Your Order (NZ Post)
-                </button>
-              </li>
-              <li>
-                <button onClick={onOpenLoyalty} className="hover:text-amber-300 transition-colors">
-                  ePerfume VIP Loyalty Program
                 </button>
               </li>
               <li>
