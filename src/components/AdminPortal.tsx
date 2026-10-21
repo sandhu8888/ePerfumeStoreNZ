@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Product, Order, GalleryItem, ProductCategory } from '../types';
-import { STORE_INFO } from '../data/initialData';
+import React, { useState, useEffect } from 'react';
+import { Product, Order, GalleryItem, ProductCategory, HeroBannerConfig } from '../types';
+import { STORE_INFO, INITIAL_HERO_CONFIG } from '../data/initialData';
 import {
   X,
   Package,
@@ -20,7 +20,16 @@ import {
   DollarSign,
   TrendingUp,
   Tag,
-  Upload
+  Upload,
+  Sparkles,
+  Layout,
+  Eye,
+  RefreshCw,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Check,
+  ExternalLink
 } from 'lucide-react';
 import { PerfumeIllustration } from './PerfumeIllustration';
 
@@ -35,6 +44,8 @@ interface AdminPortalProps {
   onUpdateOrderStatus: (orderId: string, status: Order['orderStatus'], paymentStatus: Order['paymentStatus']) => void;
   gallery: GalleryItem[];
   onUpdateGallery: (items: GalleryItem[]) => void;
+  heroConfig: HeroBannerConfig;
+  onUpdateHeroConfig: (config: HeroBannerConfig) => void;
 }
 
 export const AdminPortal: React.FC<AdminPortalProps> = ({
@@ -47,9 +58,17 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   orders,
   onUpdateOrderStatus,
   gallery,
-  onUpdateGallery
+  onUpdateGallery,
+  heroConfig,
+  onUpdateHeroConfig
 }) => {
-  const [activeTab, setActiveTab] = useState<'inventory' | 'orders' | 'invoices' | 'gallery' | 'reports'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'orders' | 'invoices' | 'gallery' | 'hero' | 'reports'>('inventory');
+  const [heroDraft, setHeroDraft] = useState<HeroBannerConfig>(heroConfig);
+  const [heroSavedNotice, setHeroSavedNotice] = useState(false);
+
+  useEffect(() => {
+    setHeroDraft(heroConfig);
+  }, [heroConfig]);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [adminUser, setAdminUser] = useState({
     name: 'Lovepreet Singh',
@@ -244,7 +263,19 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             }`}
           >
             <ImageIcon className="w-4 h-4 text-amber-700" />
-            <span>Gallery & Hero Banners</span>
+            <span>Showcase Gallery ({gallery.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('hero')}
+            className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
+              activeTab === 'hero'
+                ? 'border-amber-700 text-amber-950 font-semibold bg-white'
+                : 'border-transparent text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-amber-700" />
+            <span>Hero Banner Customizer</span>
+            <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-900 font-semibold">New</span>
           </button>
           <button
             onClick={() => setActiveTab('reports')}
@@ -959,7 +990,659 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             </div>
           )}
 
-          {/* TAB 5: REPORTS & METRICS */}
+          {/* TAB: HERO BANNER CUSTOMIZER (Full control to update or remove information) */}
+          {activeTab === 'hero' && (
+            <div className="space-y-6">
+              {/* Header with Quick Save & Live status */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-amber-700" />
+                    <h3 className="font-serif font-bold text-base text-stone-900">
+                      Storefront Hero Banner Customizer
+                    </h3>
+                  </div>
+                  <p className="text-xs text-stone-600 mt-1 max-w-2xl">
+                    Configure your high-impact luxury hero banner matching the Naseem Perfume (naseemperfume.com) standard. Upload or replace background images, update or remove any headline, subtitle, buttons, badges, and view live results.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      if (confirm('Reset hero banner to Naseem default values?')) {
+                        setHeroDraft(INITIAL_HERO_CONFIG);
+                        onUpdateHeroConfig(INITIAL_HERO_CONFIG);
+                        setHeroSavedNotice(true);
+                        setTimeout(() => setHeroSavedNotice(false), 3000);
+                      }
+                    }}
+                    className="px-3 py-2 bg-white hover:bg-stone-100 border border-stone-300 text-stone-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Reset Default</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      onUpdateHeroConfig(heroDraft);
+                      setHeroSavedNotice(true);
+                      setTimeout(() => setHeroSavedNotice(false), 3000);
+                    }}
+                    className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors"
+                  >
+                    {heroSavedNotice ? (
+                      <>
+                        <Check className="w-4 h-4 text-emerald-400" />
+                        <span>Saved to Storefront!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 text-amber-400" />
+                        <span>Publish Changes</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* LIVE HERO BANNER PREVIEW CONTAINER */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-semibold text-stone-700">
+                  <span className="flex items-center gap-1.5">
+                    <Eye className="w-4 h-4 text-amber-700" />
+                    <span>Live Interactive Preview</span>
+                  </span>
+                  <span className="text-[11px] font-normal text-stone-500">
+                    Preview reflects current draft in real time
+                  </span>
+                </div>
+
+                <div className="relative rounded-2xl overflow-hidden border border-stone-300 shadow-md min-h-[360px] flex flex-col justify-center">
+                  {/* Background Image */}
+                  <img
+                    src={heroDraft.backgroundImage}
+                    alt="Hero Preview"
+                    className="absolute inset-0 w-full h-full object-cover object-center"
+                  />
+                  {/* Dynamic Darkness Overlay */}
+                  <div
+                    className="absolute inset-0 bg-stone-950 transition-opacity"
+                    style={{ opacity: heroDraft.overlayDarkness / 100 }}
+                  />
+
+                  {/* Top Announcement Bar in Preview */}
+                  {heroDraft.showAnnouncement && heroDraft.announcementText && (
+                    <div className="absolute top-0 inset-x-0 bg-stone-900/90 backdrop-blur-xs text-amber-300 text-[10px] sm:text-xs py-1.5 px-4 text-center tracking-wider font-medium border-b border-white/10 z-10">
+                      {heroDraft.announcementText}
+                    </div>
+                  )}
+
+                  {/* Hero Content Preview */}
+                  <div
+                    className={`relative z-10 p-6 sm:p-10 w-full max-w-3xl ${
+                      heroDraft.alignment === 'center'
+                        ? 'mx-auto text-center'
+                        : heroDraft.alignment === 'right'
+                        ? 'ml-auto text-right'
+                        : 'text-left'
+                    } ${heroDraft.textColorScheme === 'dark' ? 'text-stone-900' : 'text-white'}`}
+                  >
+                    {/* Eyebrow / Provenance Badge */}
+                    {heroDraft.badgeText && (
+                      <div className="inline-flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-widest font-semibold text-amber-400 mb-2 bg-stone-900/60 px-2.5 py-1 rounded backdrop-blur-xs">
+                        <span>{heroDraft.badgeText}</span>
+                      </div>
+                    )}
+
+                    {/* Headline */}
+                    {heroDraft.title && (
+                      <h1 className="text-xl sm:text-3xl font-serif font-bold tracking-tight leading-tight mb-2">
+                        {heroDraft.title}
+                      </h1>
+                    )}
+
+                    {/* Subtitle */}
+                    {heroDraft.subtitle && (
+                      <p className="text-xs sm:text-sm font-medium text-amber-200/90 mb-2">
+                        {heroDraft.subtitle}
+                      </p>
+                    )}
+
+                    {/* Description */}
+                    {heroDraft.description && (
+                      <p className={`text-xs leading-relaxed max-w-xl mb-4 ${
+                        heroDraft.alignment === 'center' ? 'mx-auto' : ''
+                      } ${heroDraft.textColorScheme === 'dark' ? 'text-stone-700' : 'text-stone-200'}`}>
+                        {heroDraft.description}
+                      </p>
+                    )}
+
+                    {/* Buttons */}
+                    <div className={`flex flex-wrap items-center gap-3 ${
+                      heroDraft.alignment === 'center'
+                        ? 'justify-center'
+                        : heroDraft.alignment === 'right'
+                        ? 'justify-end'
+                        : 'justify-start'
+                    }`}>
+                      {heroDraft.showPrimaryCta && heroDraft.primaryCtaText && (
+                        <span className="px-4 py-2 bg-amber-500 text-stone-950 font-semibold text-xs rounded-lg shadow-sm">
+                          {heroDraft.primaryCtaText} →
+                        </span>
+                      )}
+                      {heroDraft.showSecondaryCta && heroDraft.secondaryCtaText && (
+                        <span className="px-4 py-2 bg-white/20 backdrop-blur-xs text-white border border-white/30 font-semibold text-xs rounded-lg">
+                          {heroDraft.secondaryCtaText}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Trust Badges in Preview */}
+                    {heroDraft.showTrustBadges && (
+                      <div className={`mt-6 pt-4 border-t border-white/20 grid grid-cols-3 gap-3 text-[10px] ${
+                        heroDraft.alignment === 'center' ? 'max-w-md mx-auto' : 'max-w-md'
+                      }`}>
+                        <div>
+                          <strong className="block font-bold text-xs">{heroDraft.trustBadge1Title}</strong>
+                          <span className="opacity-80">{heroDraft.trustBadge1Sub}</span>
+                        </div>
+                        <div>
+                          <strong className="block font-bold text-xs">{heroDraft.trustBadge2Title}</strong>
+                          <span className="opacity-80">{heroDraft.trustBadge2Sub}</span>
+                        </div>
+                        <div>
+                          <strong className="block font-bold text-xs">{heroDraft.trustBadge3Title}</strong>
+                          <span className="opacity-80">{heroDraft.trustBadge3Sub}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* TWO COLUMN CUSTOMIZATION SETTINGS */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* COLUMN 1: IMAGE & VISUAL STYLING */}
+                <div className="space-y-5 bg-white p-5 rounded-2xl border border-stone-200 shadow-xs text-xs">
+                  <div className="border-b border-stone-200 pb-3 flex items-center justify-between">
+                    <h4 className="font-serif font-bold text-sm text-stone-900 flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-amber-700" />
+                      <span>Hero Background Image</span>
+                    </h4>
+                    <span className="text-[11px] text-stone-500">Supports local file upload or URL</span>
+                  </div>
+
+                  {/* Local File Upload Button */}
+                  <div className="space-y-2">
+                    <label className="block font-medium text-stone-700">Upload New Hero Image from Computer</label>
+                    <label className="flex flex-col items-center justify-center border-2 border-dashed border-stone-300 hover:border-amber-600 rounded-xl p-4 cursor-pointer bg-stone-50 hover:bg-amber-50/40 transition-colors">
+                      <Upload className="w-6 h-6 text-amber-700 mb-1" />
+                      <span className="font-semibold text-stone-800 text-xs">Click to browse or drop image file</span>
+                      <span className="text-[10px] text-stone-500 mt-0.5">PNG, JPG, WEBP, or AVIF (high-res recommended)</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setHeroDraft((prev) => ({
+                                ...prev,
+                                backgroundImage: reader.result as string
+                              }));
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Or Image URL */}
+                  <div>
+                    <label className="block font-medium text-stone-700 mb-1">Or Paste Direct Image URL</label>
+                    <input
+                      type="text"
+                      value={heroDraft.backgroundImage}
+                      onChange={(e) => setHeroDraft({ ...heroDraft, backgroundImage: e.target.value })}
+                      placeholder="https://..."
+                      className="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs"
+                    />
+                  </div>
+
+                  {/* Curated Luxury Naseem Presets */}
+                  <div>
+                    <label className="block font-medium text-stone-700 mb-2">Curated Naseem Luxury Presets</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {[
+                        {
+                          name: 'Amber Gold',
+                          url: 'https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=2000&q=85'
+                        },
+                        {
+                          name: 'Royal Dubai',
+                          url: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=2000&q=85'
+                        },
+                        {
+                          name: 'Aqua White',
+                          url: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=2000&q=85'
+                        },
+                        {
+                          name: 'Crystal Flacon',
+                          url: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=2000&q=85'
+                        }
+                      ].map((preset) => (
+                        <button
+                          key={preset.name}
+                          type="button"
+                          onClick={() => setHeroDraft({ ...heroDraft, backgroundImage: preset.url })}
+                          className={`p-1.5 rounded-lg border text-left flex flex-col items-center gap-1 transition-all ${
+                            heroDraft.backgroundImage === preset.url
+                              ? 'border-amber-600 bg-amber-50 ring-1 ring-amber-600'
+                              : 'border-stone-200 hover:border-stone-400'
+                          }`}
+                        >
+                          <img
+                            src={preset.url}
+                            alt={preset.name}
+                            className="w-full h-12 object-cover rounded"
+                          />
+                          <span className="text-[10px] font-medium text-stone-700">{preset.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Overlay Darkness & Text Alignment */}
+                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-stone-100">
+                    <div>
+                      <div className="flex justify-between items-center mb-1">
+                        <label className="font-medium text-stone-700">Darkness Overlay</label>
+                        <span className="font-mono text-amber-800 font-bold">{heroDraft.overlayDarkness}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="90"
+                        step="5"
+                        value={heroDraft.overlayDarkness}
+                        onChange={(e) => setHeroDraft({ ...heroDraft, overlayDarkness: parseInt(e.target.value, 10) })}
+                        className="w-full accent-amber-600"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-medium text-stone-700 mb-1">Text Alignment</label>
+                      <div className="grid grid-cols-3 gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setHeroDraft({ ...heroDraft, alignment: 'left' })}
+                          className={`p-2 rounded-lg border flex items-center justify-center ${
+                            heroDraft.alignment === 'left' ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 border-stone-200 text-stone-700'
+                          }`}
+                          title="Left Align"
+                        >
+                          <AlignLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setHeroDraft({ ...heroDraft, alignment: 'center' })}
+                          className={`p-2 rounded-lg border flex items-center justify-center ${
+                            heroDraft.alignment === 'center' ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 border-stone-200 text-stone-700'
+                          }`}
+                          title="Center Align"
+                        >
+                          <AlignCenter className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setHeroDraft({ ...heroDraft, alignment: 'right' })}
+                          className={`p-2 rounded-lg border flex items-center justify-center ${
+                            heroDraft.alignment === 'right' ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 border-stone-200 text-stone-700'
+                          }`}
+                          title="Right Align"
+                        >
+                          <AlignRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Text Color Scheme & Featured Card */}
+                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-stone-100">
+                    <div>
+                      <label className="block font-medium text-stone-700 mb-1">Text Color Contrast</label>
+                      <div className="grid grid-cols-2 gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setHeroDraft({ ...heroDraft, textColorScheme: 'light' })}
+                          className={`py-1.5 px-2 rounded-lg border text-center font-medium ${
+                            heroDraft.textColorScheme === 'light' ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 border-stone-200 text-stone-700'
+                          }`}
+                        >
+                          Light Text
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setHeroDraft({ ...heroDraft, textColorScheme: 'dark' })}
+                          className={`py-1.5 px-2 rounded-lg border text-center font-medium ${
+                            heroDraft.textColorScheme === 'dark' ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 border-stone-200 text-stone-700'
+                          }`}
+                        >
+                          Dark Text
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-medium text-stone-700 mb-1">Featured Flacon Card</label>
+                      <label className="flex items-center gap-2 p-2 rounded-lg border border-stone-200 bg-stone-50 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={heroDraft.showFeaturedProductCard}
+                          onChange={(e) => setHeroDraft({ ...heroDraft, showFeaturedProductCard: e.target.checked })}
+                          className="accent-amber-600 rounded"
+                        />
+                        <span className="text-[11px] font-medium text-stone-800">Show bottle card</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* COLUMN 2: COPYWRITING & INFORMATION CUSTOMIZER */}
+                <div className="space-y-4 bg-white p-5 rounded-2xl border border-stone-200 shadow-xs text-xs">
+                  <div className="border-b border-stone-200 pb-3 flex items-center justify-between">
+                    <h4 className="font-serif font-bold text-sm text-stone-900 flex items-center gap-2">
+                      <Layout className="w-4 h-4 text-amber-700" />
+                      <span>Text &amp; Information Fields</span>
+                    </h4>
+                    <span className="text-[11px] text-stone-400">Clear any field to remove from hero</span>
+                  </div>
+
+                  {/* Announcement Bar */}
+                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="font-semibold text-stone-800 flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={heroDraft.showAnnouncement}
+                          onChange={(e) => setHeroDraft({ ...heroDraft, showAnnouncement: e.target.checked })}
+                          className="accent-amber-600 rounded"
+                        />
+                        <span>Top Announcement Ribbon</span>
+                      </label>
+                      {heroDraft.announcementText && (
+                        <button
+                          type="button"
+                          onClick={() => setHeroDraft({ ...heroDraft, announcementText: '' })}
+                          className="text-[10px] text-rose-600 hover:underline"
+                        >
+                          Remove text
+                        </button>
+                      )}
+                    </div>
+                    {heroDraft.showAnnouncement && (
+                      <input
+                        type="text"
+                        value={heroDraft.announcementText}
+                        onChange={(e) => setHeroDraft({ ...heroDraft, announcementText: e.target.value })}
+                        placeholder="e.g. FREE EXPRESS NZ SHIPPING OVER $75..."
+                        className="w-full px-3 py-1.5 border border-stone-300 rounded-lg text-xs"
+                      />
+                    )}
+                  </div>
+
+                  {/* Eyebrow / Provenance Badge */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="font-medium text-stone-700">Eyebrow / Badge Text</label>
+                      {heroDraft.badgeText && (
+                        <button
+                          type="button"
+                          onClick={() => setHeroDraft({ ...heroDraft, badgeText: '' })}
+                          className="text-[10px] text-rose-600 hover:underline"
+                        >
+                          Remove badge
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={heroDraft.badgeText}
+                      onChange={(e) => setHeroDraft({ ...heroDraft, badgeText: e.target.value })}
+                      placeholder="Leave blank to completely remove..."
+                      className="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs"
+                    />
+                  </div>
+
+                  {/* Headline Title */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="font-medium text-stone-700">Main Headline Title</label>
+                      {heroDraft.title && (
+                        <button
+                          type="button"
+                          onClick={() => setHeroDraft({ ...heroDraft, title: '' })}
+                          className="text-[10px] text-rose-600 hover:underline"
+                        >
+                          Remove title
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={heroDraft.title}
+                      onChange={(e) => setHeroDraft({ ...heroDraft, title: e.target.value })}
+                      placeholder="Leave blank to completely remove..."
+                      className="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs font-serif font-bold"
+                    />
+                  </div>
+
+                  {/* Subtitle / Tagline */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="font-medium text-stone-700">Subtitle / Tagline</label>
+                      {heroDraft.subtitle && (
+                        <button
+                          type="button"
+                          onClick={() => setHeroDraft({ ...heroDraft, subtitle: '' })}
+                          className="text-[10px] text-rose-600 hover:underline"
+                        >
+                          Remove subtitle
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={heroDraft.subtitle}
+                      onChange={(e) => setHeroDraft({ ...heroDraft, subtitle: e.target.value })}
+                      placeholder="Leave blank to completely remove..."
+                      className="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs"
+                    />
+                  </div>
+
+                  {/* Body Description */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="font-medium text-stone-700">Body Description Prose</label>
+                      {heroDraft.description && (
+                        <button
+                          type="button"
+                          onClick={() => setHeroDraft({ ...heroDraft, description: '' })}
+                          className="text-[10px] text-rose-600 hover:underline"
+                        >
+                          Remove description
+                        </button>
+                      )}
+                    </div>
+                    <textarea
+                      rows={2}
+                      value={heroDraft.description}
+                      onChange={(e) => setHeroDraft({ ...heroDraft, description: e.target.value })}
+                      placeholder="Leave blank to completely remove..."
+                      className="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs"
+                    />
+                  </div>
+
+                  {/* Primary & Secondary Call to Actions */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-stone-100">
+                    <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="font-semibold text-stone-800 flex items-center gap-1.5">
+                          <input
+                            type="checkbox"
+                            checked={heroDraft.showPrimaryCta}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, showPrimaryCta: e.target.checked })}
+                            className="accent-amber-600 rounded"
+                          />
+                          <span>Primary Button</span>
+                        </label>
+                      </div>
+                      {heroDraft.showPrimaryCta && (
+                        <>
+                          <input
+                            type="text"
+                            value={heroDraft.primaryCtaText}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, primaryCtaText: e.target.value })}
+                            placeholder="Button label..."
+                            className="w-full px-2.5 py-1.5 border border-stone-300 rounded-md text-xs"
+                          />
+                          <select
+                            value={heroDraft.primaryCtaLink}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, primaryCtaLink: e.target.value as any })}
+                            className="w-full px-2.5 py-1.5 border border-stone-300 rounded-md text-xs bg-white"
+                          >
+                            <option value="products">Catalog / Products</option>
+                            <option value="contact">Contact & Store</option>
+                            <option value="about">About Brand</option>
+                          </select>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="font-semibold text-stone-800 flex items-center gap-1.5">
+                          <input
+                            type="checkbox"
+                            checked={heroDraft.showSecondaryCta}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, showSecondaryCta: e.target.checked })}
+                            className="accent-amber-600 rounded"
+                          />
+                          <span>Secondary Button</span>
+                        </label>
+                      </div>
+                      {heroDraft.showSecondaryCta && (
+                        <>
+                          <input
+                            type="text"
+                            value={heroDraft.secondaryCtaText}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, secondaryCtaText: e.target.value })}
+                            placeholder="Button label..."
+                            className="w-full px-2.5 py-1.5 border border-stone-300 rounded-md text-xs"
+                          />
+                          <select
+                            value={heroDraft.secondaryCtaLink}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, secondaryCtaLink: e.target.value as any })}
+                            className="w-full px-2.5 py-1.5 border border-stone-300 rounded-md text-xs bg-white"
+                          >
+                            <option value="contact">Contact & Store</option>
+                            <option value="products">Catalog / Products</option>
+                            <option value="about">About Brand</option>
+                          </select>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Trust Badges Configuration */}
+                  <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="font-semibold text-stone-800 flex items-center gap-1.5">
+                        <input
+                          type="checkbox"
+                          checked={heroDraft.showTrustBadges}
+                          onChange={(e) => setHeroDraft({ ...heroDraft, showTrustBadges: e.target.checked })}
+                          className="accent-amber-600 rounded"
+                        />
+                        <span>Bottom Trust Badges (3 Pillars)</span>
+                      </label>
+                    </div>
+                    {heroDraft.showTrustBadges && (
+                      <div className="grid grid-cols-3 gap-2 pt-1">
+                        <div>
+                          <input
+                            type="text"
+                            value={heroDraft.trustBadge1Title}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, trustBadge1Title: e.target.value })}
+                            placeholder="Title 1"
+                            className="w-full px-2 py-1 border border-stone-300 rounded text-xs font-bold"
+                          />
+                          <input
+                            type="text"
+                            value={heroDraft.trustBadge1Sub}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, trustBadge1Sub: e.target.value })}
+                            placeholder="Sub 1"
+                            className="w-full px-2 py-1 border border-stone-300 rounded text-[11px] mt-1 text-stone-600"
+                          />
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            value={heroDraft.trustBadge2Title}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, trustBadge2Title: e.target.value })}
+                            placeholder="Title 2"
+                            className="w-full px-2 py-1 border border-stone-300 rounded text-xs font-bold"
+                          />
+                          <input
+                            type="text"
+                            value={heroDraft.trustBadge2Sub}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, trustBadge2Sub: e.target.value })}
+                            placeholder="Sub 2"
+                            className="w-full px-2 py-1 border border-stone-300 rounded text-[11px] mt-1 text-stone-600"
+                          />
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            value={heroDraft.trustBadge3Title}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, trustBadge3Title: e.target.value })}
+                            placeholder="Title 3"
+                            className="w-full px-2 py-1 border border-stone-300 rounded text-xs font-bold"
+                          />
+                          <input
+                            type="text"
+                            value={heroDraft.trustBadge3Sub}
+                            onChange={(e) => setHeroDraft({ ...heroDraft, trustBadge3Sub: e.target.value })}
+                            placeholder="Sub 3"
+                            className="w-full px-2 py-1 border border-stone-300 rounded text-[11px] mt-1 text-stone-600"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Save action bar at bottom of form */}
+                  <div className="pt-3 border-t border-stone-200 flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onUpdateHeroConfig(heroDraft);
+                        setHeroSavedNotice(true);
+                        setTimeout(() => setHeroSavedNotice(false), 3000);
+                      }}
+                      className="px-5 py-2.5 bg-stone-900 hover:bg-stone-800 text-white font-semibold rounded-xl text-xs flex items-center gap-2 shadow-xs transition-colors"
+                    >
+                      <Sparkles className="w-4 h-4 text-amber-400" />
+                      <span>{heroSavedNotice ? 'Saved to Storefront!' : 'Save & Publish Banner'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           {activeTab === 'reports' && (
             <div className="space-y-6">
               {/* Stat Cards */}

@@ -1,4 +1,4 @@
-import { Product, Order, LoyaltyMember, GalleryItem } from '../types';
+import { Product, Order, LoyaltyMember, GalleryItem, HeroBannerConfig } from '../types';
 
 export const INITIAL_PRODUCTS: Product[] = [
   {
@@ -501,4 +501,33 @@ export const STORE_INFO = {
     youtube: 'https://www.youtube.com/@ePerfumeStoreNZ',
     instagram: 'https://www.instagram.com/eperfumestore/'
   }
+};
+
+export const INITIAL_HERO_CONFIG: HeroBannerConfig = {
+  enabled: true,
+  announcementText: 'FREE EXPRESS NZ POST SHIPPING OVER $75 · 100% ALCOHOL-FREE ARABIAN PERFUMES · DISPATCHED FROM INVERCARGILL',
+  showAnnouncement: true,
+  badgeText: 'NASEEM PERFUME DUBAI · OFFICIAL NEW ZEALAND RETAILER',
+  title: 'World-Renowned 100% Alcohol-Free Luxury Perfumes & Pure Concentrated Oils',
+  subtitle: 'Pioneers in Pure Alcohol-Free Arabian Perfumery',
+  description: 'Experience opulent scents meticulously blended in Dubai. From silky concentrated perfume oils (Attars) to groundbreaking water-based Aqua Perfumes, experience 24-hour hypoallergenic sillage safe for skin and soul.',
+  backgroundImage: 'https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=2000&q=85',
+  alignment: 'left',
+  overlayDarkness: 45,
+  textColorScheme: 'light',
+  primaryCtaText: 'Explore UAE Collection',
+  primaryCtaLink: 'products',
+  showPrimaryCta: true,
+  secondaryCtaText: 'Visit Invercargill Store',
+  secondaryCtaLink: 'contact',
+  showSecondaryCta: true,
+  showTrustBadges: true,
+  trustBadge1Title: '100%',
+  trustBadge1Sub: 'Alcohol-Free Oils',
+  trustBadge2Title: '24hr+',
+  trustBadge2Sub: 'Skin & Fabric Sillage',
+  trustBadge3Title: 'Free NZ',
+  trustBadge3Sub: 'Delivery Over $75',
+  featuredProductId: 'naseem-bushra-oil',
+  showFeaturedProductCard: true
 };

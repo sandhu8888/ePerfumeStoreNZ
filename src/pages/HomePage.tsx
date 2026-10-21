@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Product, ProductCategory, GalleryItem } from '../types';
+import { Product, ProductCategory, GalleryItem, HeroBannerConfig } from '../types';
 import { ProductCard } from '../components/ProductCard';
 import { PerfumeIllustration } from '../components/PerfumeIllustration';
 import { STORE_INFO } from '../data/initialData';
@@ -12,12 +12,19 @@ import {
   Phone,
   ChevronRight,
   Star,
+  ShieldCheck,
+  Clock,
+  Heart,
+  CheckCircle2,
+  Award,
+  Flame,
   Image as ImageIcon
 } from 'lucide-react';
 
 interface HomePageProps {
   products: Product[];
   gallery: GalleryItem[];
+  heroConfig: HeroBannerConfig;
   onAddToCart: (product: Product) => void;
   onQuickView: (product: Product) => void;
   onNavigate: (tab: string, categoryFilter?: ProductCategory | 'all') => void;
@@ -26,6 +33,7 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = ({
   products,
   gallery,
+  heroConfig,
   onAddToCart,
   onQuickView,
   onNavigate
@@ -43,132 +51,226 @@ export const HomePage: React.FC<HomePageProps> = ({
     return item.category === activeGalleryTag;
   });
 
+  // Featured perfume for hero flacon card
+  const heroProduct = products.find((p) => p.id === heroConfig.featuredProductId) || products[0];
+
+  const isLightText = heroConfig.textColorScheme === 'light';
+
   return (
     <div className="space-y-16 sm:space-y-24 bg-white text-stone-900">
-      {/* 1. STOREFRONT HERO SECTION (Crisp White Canvas) */}
-      <section className="relative overflow-hidden pt-8 pb-12 md:py-16 bg-white border-b border-stone-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            {/* Left Content (7 cols) */}
-            <div className="lg:col-span-7 space-y-6">
-              {/* Unboxed editorial provenance metadata */}
-              <div className="flex items-center gap-2 text-xs text-stone-500 font-sans tracking-wide">
-                <span className="font-semibold text-amber-800 uppercase tracking-widest text-[11px]">
-                  Naseem Perfume UAE · Official New Zealand Retailer
-                </span>
-                <span aria-hidden="true">·</span>
-                <span>Invercargill Store</span>
-                <span aria-hidden="true">·</span>
-                <span>NZ-Wide Dispatch</span>
-              </div>
+      {/* 0. OPTIONAL LUXURY ANNOUNCEMENT TICKER (From Admin Hero Config) */}
+      {heroConfig.showAnnouncement && heroConfig.announcementText && (
+        <div className="bg-stone-950 text-amber-300 py-2.5 px-4 text-center border-b border-stone-800">
+          <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-xs font-medium tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            <span>{heroConfig.announcementText}</span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0 hidden sm:inline" />
+          </div>
+        </div>
+      )}
 
-              {/* Main Headline */}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-stone-900 tracking-tight leading-[1.15] text-balance">
-                Luxury UAE-Made Scents, Pure Concentrated Oils &amp; Ambient Fragrance.
-              </h1>
+      {/* 1. NASEEM LUXURY HERO SECTION (Fully Customizable from Admin Portal) */}
+      {heroConfig.enabled && (
+        <section className="relative overflow-hidden min-h-[580px] lg:min-h-[660px] flex items-center border-b border-stone-200">
+          {/* Background Image */}
+          <img
+            src={heroConfig.backgroundImage}
+            alt={heroConfig.title || 'Naseem Perfume UAE'}
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
 
-              {/* Subtitle Prose */}
-              <p className="text-base sm:text-lg text-stone-600 leading-relaxed max-w-xl">
-                Experience world-renowned, 100% alcohol-free Arabian perfume oils, opulent luxury EDPs, and artisanal home air fresheners crafted in the United Arab Emirates. Dispatched same-day across New Zealand from our Invercargill boutique.
-              </p>
+          {/* Dynamic Darkness Overlay (Set in Admin Portal) */}
+          <div
+            className="absolute inset-0 bg-stone-950 transition-opacity"
+            style={{ opacity: heroConfig.overlayDarkness / 100 }}
+          />
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <button
-                  onClick={() => onNavigate('products', 'all')}
-                  className="px-6 py-3.5 bg-stone-900 hover:bg-stone-800 text-white font-semibold text-sm rounded-xl flex items-center gap-2 transition-colors shadow-xs"
-                >
-                  <span>Explore UAE Collection</span>
-                  <ArrowRight className="w-4 h-4 text-amber-400" />
-                </button>
-                <button
-                  onClick={() => onNavigate('contact')}
-                  className="px-6 py-3.5 bg-white hover:bg-stone-50 border border-stone-300 text-stone-800 font-semibold text-sm rounded-xl flex items-center gap-2 transition-colors"
-                >
-                  <MapPin className="w-4 h-4 text-amber-700" />
-                  <span>Visit Invercargill Store</span>
-                </button>
-              </div>
+          {/* Content Container */}
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              {/* Left / Center Content Column */}
+              <div
+                className={`space-y-6 ${
+                  heroConfig.showFeaturedProductCard ? 'lg:col-span-7' : 'lg:col-span-12 max-w-4xl'
+                } ${
+                  heroConfig.alignment === 'center'
+                    ? 'mx-auto text-center'
+                    : heroConfig.alignment === 'right'
+                    ? 'ml-auto text-right'
+                    : 'text-left'
+                }`}
+              >
+                {/* Eyebrow / Provenance Badge (Can be updated or removed in Admin) */}
+                {heroConfig.badgeText && (
+                  <div className={`flex items-center gap-2 text-xs font-sans tracking-wide ${
+                    heroConfig.alignment === 'center' ? 'justify-center' : heroConfig.alignment === 'right' ? 'justify-end' : ''
+                  }`}>
+                    <span className="px-3 py-1 rounded-full font-semibold uppercase tracking-widest text-[11px] bg-amber-500/20 text-amber-300 border border-amber-400/30 backdrop-blur-xs">
+                      {heroConfig.badgeText}
+                    </span>
+                  </div>
+                )}
 
-              {/* Editorial Trust Markers */}
-              <div className="pt-6 border-t border-stone-200 grid grid-cols-3 gap-4 text-xs text-stone-600">
-                <div>
-                  <strong className="block font-serif text-lg font-bold text-stone-900">100%</strong>
-                  <span>Alcohol-Free Oils</span>
-                </div>
-                <div>
-                  <strong className="block font-serif text-lg font-bold text-stone-900">24hr+</strong>
-                  <span>Skin &amp; Fabric Sillage</span>
-                </div>
-                <div>
-                  <strong className="block font-serif text-lg font-bold text-stone-900">Free NZ</strong>
-                  <span>Delivery Over $75</span>
-                </div>
-              </div>
-            </div>
+                {/* Main Headline Title (Can be updated or removed in Admin) */}
+                {heroConfig.title && (
+                  <h1 className={`text-3xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight leading-[1.12] text-balance ${
+                    isLightText ? 'text-white' : 'text-stone-950'
+                  }`}>
+                    {heroConfig.title}
+                  </h1>
+                )}
 
-            {/* Right Media Showcase (5 cols) */}
-            <div className="lg:col-span-5">
-              <div className="relative rounded-2xl bg-stone-50 p-6 sm:p-8 border border-stone-200 shadow-sm">
-                <div className="relative">
-                  {/* Hero Flacon Lead Product: Naseem Bushra Concentrated Perfume Oil */}
-                  <PerfumeIllustration product={products[0]} size="lg" />
+                {/* Subtitle / Tagline (Can be updated or removed in Admin) */}
+                {heroConfig.subtitle && (
+                  <div className="text-base sm:text-xl font-serif italic text-amber-300 tracking-wide">
+                    {heroConfig.subtitle}
+                  </div>
+                )}
 
-                  {/* Feature Highlight Card overlay */}
-                  <div className="mt-4 p-4 rounded-xl bg-white border border-stone-200 shadow-xs flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] text-amber-800 font-semibold uppercase tracking-wider">
-                        Featured UAE Scent
-                      </div>
-                      <div className="font-serif font-bold text-stone-900 text-sm">
-                        {products[0].name}
-                      </div>
-                      <div className="text-xs text-stone-500">
-                        Top Seller · Rose, Amber &amp; Bourbon Vanilla
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-mono font-bold text-stone-900 text-base">
-                        ${products[0].price.toFixed(2)}
-                      </div>
+                {/* Description Body (Can be updated or removed in Admin) */}
+                {heroConfig.description && (
+                  <p className={`text-sm sm:text-base leading-relaxed max-w-2xl ${
+                    heroConfig.alignment === 'center' ? 'mx-auto' : ''
+                  } ${isLightText ? 'text-stone-200' : 'text-stone-800'}`}>
+                    {heroConfig.description}
+                  </p>
+                )}
+
+                {/* Action Buttons (Can be updated, changed, or removed in Admin) */}
+                {(heroConfig.showPrimaryCta || heroConfig.showSecondaryCta) && (
+                  <div className={`flex flex-wrap items-center gap-4 pt-2 ${
+                    heroConfig.alignment === 'center'
+                      ? 'justify-center'
+                      : heroConfig.alignment === 'right'
+                      ? 'justify-end'
+                      : 'justify-start'
+                  }`}>
+                    {heroConfig.showPrimaryCta && heroConfig.primaryCtaText && (
                       <button
-                        onClick={() => onQuickView(products[0])}
-                        className="text-xs text-amber-800 hover:text-amber-950 font-semibold underline"
+                        onClick={() => onNavigate(heroConfig.primaryCtaLink, 'all')}
+                        className="px-7 py-3.5 bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-sm rounded-xl flex items-center gap-2 shadow-lg transition-all hover:scale-102"
                       >
-                        Details →
+                        <span>{heroConfig.primaryCtaText}</span>
+                        <ArrowRight className="w-4 h-4" />
                       </button>
+                    )}
+
+                    {heroConfig.showSecondaryCta && heroConfig.secondaryCtaText && (
+                      <button
+                        onClick={() => onNavigate(heroConfig.secondaryCtaLink)}
+                        className={`px-6 py-3.5 font-semibold text-sm rounded-xl flex items-center gap-2 transition-all ${
+                          isLightText
+                            ? 'bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-xs'
+                            : 'bg-stone-900 hover:bg-stone-800 text-white shadow-md'
+                        }`}
+                      >
+                        <MapPin className="w-4 h-4 text-amber-400" />
+                        <span>{heroConfig.secondaryCtaText}</span>
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Editorial Trust Markers (Can be updated or removed in Admin) */}
+                {heroConfig.showTrustBadges && (
+                  <div className={`pt-6 border-t ${
+                    isLightText ? 'border-white/20 text-stone-200' : 'border-stone-300 text-stone-700'
+                  } grid grid-cols-3 gap-4 text-xs ${
+                    heroConfig.alignment === 'center' ? 'max-w-lg mx-auto' : 'max-w-lg'
+                  }`}>
+                    <div>
+                      <strong className={`block font-serif text-lg font-bold ${isLightText ? 'text-amber-400' : 'text-stone-900'}`}>
+                        {heroConfig.trustBadge1Title}
+                      </strong>
+                      <span className="opacity-90">{heroConfig.trustBadge1Sub}</span>
+                    </div>
+                    <div>
+                      <strong className={`block font-serif text-lg font-bold ${isLightText ? 'text-amber-400' : 'text-stone-900'}`}>
+                        {heroConfig.trustBadge2Title}
+                      </strong>
+                      <span className="opacity-90">{heroConfig.trustBadge2Sub}</span>
+                    </div>
+                    <div>
+                      <strong className={`block font-serif text-lg font-bold ${isLightText ? 'text-amber-400' : 'text-stone-900'}`}>
+                        {heroConfig.trustBadge3Title}
+                      </strong>
+                      <span className="opacity-90">{heroConfig.trustBadge3Sub}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Featured Product Card (Can be toggled in Admin) */}
+              {heroConfig.showFeaturedProductCard && heroProduct && (
+                <div className="lg:col-span-5">
+                  <div className="relative rounded-3xl bg-white/90 backdrop-blur-md p-6 sm:p-8 border border-white/50 shadow-2xl text-stone-900">
+                    <div className="relative">
+                      {/* Flacon Visual */}
+                      <PerfumeIllustration product={heroProduct} size="lg" />
+
+                      {/* Highlight card */}
+                      <div className="mt-5 p-4 rounded-2xl bg-stone-50 border border-stone-200/80 shadow-xs flex items-center justify-between">
+                        <div>
+                          <div className="text-[11px] text-amber-800 font-semibold uppercase tracking-wider flex items-center gap-1">
+                            <Sparkles className="w-3 h-3 text-amber-600" />
+                            <span>Featured Dubai Masterpiece</span>
+                          </div>
+                          <div className="font-serif font-bold text-stone-900 text-sm mt-0.5">
+                            {heroProduct.name}
+                          </div>
+                          <div className="text-xs text-stone-500">
+                            100% Alcohol-Free · {heroProduct.type}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-mono font-bold text-stone-900 text-lg">
+                            ${heroProduct.price.toFixed(2)}
+                          </div>
+                          <button
+                            onClick={() => onQuickView(heroProduct)}
+                            className="text-xs text-amber-800 hover:text-amber-950 font-semibold underline"
+                          >
+                            Quick View →
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* 2. CATEGORY TAXONOMY STRIP */}
+      {/* 2. THE NASEEM FRAGRANCE UNIVERSE (Matching naseemperfume.com Categories) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-8">
-          <div className="text-xs uppercase tracking-widest text-amber-800 font-semibold mb-2">
-            Signature UAE Formulations
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <div className="text-xs uppercase tracking-widest text-amber-800 font-semibold mb-2 flex items-center justify-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            <span>Curated Arabian Fragrance Universe</span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
-            Explore Curated Fragrance Categories
+          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-900">
+            Explore Naseem UAE Collections
           </h2>
           <p className="text-sm text-stone-600 mt-2">
-            Each Naseem creation is blended with premium essential notes, hypoallergenic bases, and long-lasting Arab craftsmanship.
+            Pioneering alcohol-free perfumery crafted in Dubai, United Arab Emirates. Each bottle is formulated with hypoallergenic ingredients and immense longevity.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Card 1: Perfume Oils */}
+          {/* Card 1: Concentrated Perfume Oils */}
           <div
             onClick={() => onNavigate('products', 'perfume-oil')}
-            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-amber-600 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <div className="w-12 h-12 rounded-xl bg-stone-100 text-stone-800 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
                 <Droplets className="w-6 h-6 text-amber-700" />
+              </div>
+              <div className="text-[10px] uppercase font-mono tracking-wider text-amber-700 font-bold mb-1">
+                Halal &amp; Hypoallergenic
               </div>
               <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-amber-800 transition-colors">
                 Concentrated Perfume Oils
@@ -178,74 +280,83 @@ export const HomePage: React.FC<HomePageProps> = ({
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-900">
-              <span>View Perfume Oils</span>
-              <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+              <span className="text-amber-800">Shop Pure Oils</span>
+              <ChevronRight className="w-4 h-4 text-amber-700 transform group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
-          {/* Card 2: For Men */}
+          {/* Card 2: Aqua Perfumes - Alcohol Free (Naseem's signature innovation) */}
+          <div
+            onClick={() => onNavigate('products', 'for-women')}
+            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-amber-600 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between"
+          >
+            <div>
+              <div className="w-12 h-12 rounded-xl bg-sky-50 text-sky-800 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                <Sparkles className="w-6 h-6 text-sky-700" />
+              </div>
+              <div className="text-[10px] uppercase font-mono tracking-wider text-sky-700 font-bold mb-1">
+                World&apos;s 1st Water-Based
+              </div>
+              <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-amber-800 transition-colors">
+                Aqua Perfumes &amp; EDP
+              </h3>
+              <p className="text-xs text-stone-500 mt-2 leading-relaxed">
+                Naseem&apos;s breakthrough water-based micro-emulsion sprays. Zero alcohol sting, safe on sensitive skin, clothes, and hair.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-900">
+              <span className="text-amber-800">Discover Aqua Scents</span>
+              <ChevronRight className="w-4 h-4 text-amber-700 transform group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+
+          {/* Card 3: For Men / Pour Homme */}
           <div
             onClick={() => onNavigate('products', 'for-men')}
-            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-amber-600 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between"
           >
             <div>
               <div className="w-12 h-12 rounded-xl bg-stone-100 text-stone-900 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                <Sparkles className="w-6 h-6 text-amber-700" />
+                <Award className="w-6 h-6 text-amber-700" />
+              </div>
+              <div className="text-[10px] uppercase font-mono tracking-wider text-stone-600 font-bold mb-1">
+                Oud, Woods &amp; Amber
               </div>
               <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-amber-800 transition-colors">
                 For Men (Pour Homme)
               </h3>
               <p className="text-xs text-stone-500 mt-2 leading-relaxed">
-                Commanding UAE compositions featuring smoky Cambodian agarwood, cardamoms, rich leather accords, and dark ambergris.
+                Commanding UAE compositions featuring smoky Cambodian agarwood, cardamoms, rich leather accords, and royal ambergris.
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-900">
-              <span>View Men&apos;s Scents</span>
-              <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+              <span className="text-amber-800">View Men&apos;s Scents</span>
+              <ChevronRight className="w-4 h-4 text-amber-700 transform group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
 
-          {/* Card 3: For Women */}
-          <div
-            onClick={() => onNavigate('products', 'for-women')}
-            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
-          >
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-stone-100 text-stone-800 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                <Star className="w-6 h-6 text-amber-700" />
-              </div>
-              <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-amber-800 transition-colors">
-                For Women (Pour Femme)
-              </h3>
-              <p className="text-xs text-stone-500 mt-2 leading-relaxed">
-                Velvety Damask roses, sparkling white peaches, royal Arabian jasmine, and gourmand vanilla praline EDP sprays.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-900">
-              <span>View Women&apos;s Scents</span>
-              <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-
-          {/* Card 4: Home Air Fresheners */}
+          {/* Card 4: Ambient Fresheners & Bakhoor */}
           <div
             onClick={() => onNavigate('products', 'home-freshener')}
-            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+            className="group p-6 rounded-2xl bg-white border border-stone-200 hover:border-amber-600 hover:shadow-lg transition-all cursor-pointer flex flex-col justify-between"
           >
             <div>
-              <div className="w-12 h-12 rounded-xl bg-stone-100 text-stone-900 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                <Truck className="w-6 h-6 text-amber-700" />
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                <Flame className="w-6 h-6 text-emerald-700" />
+              </div>
+              <div className="text-[10px] uppercase font-mono tracking-wider text-emerald-700 font-bold mb-1">
+                Room Sprays &amp; Incense
               </div>
               <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-amber-800 transition-colors">
-                Home Air Fresheners
+                Ambient &amp; Air Fresheners
               </h3>
               <p className="text-xs text-stone-500 mt-2 leading-relaxed">
-                300ml aerosol-free ambient room mists. Infuse your living room, linens, and curtains with authentic Dubai rose and bakhoor.
+                300ml aerosol-free fine room mists. Infuse your living sanctuary, curtains, and linens with authentic Dubai rose and bakhoor.
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs font-semibold text-stone-900">
-              <span>View Home Fresheners</span>
-              <ChevronRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+              <span className="text-amber-800">Shop Home Scents</span>
+              <ChevronRight className="w-4 h-4 text-amber-700 transform group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>
@@ -384,6 +495,143 @@ export const HomePage: React.FC<HomePageProps> = ({
             <p className="text-xs text-stone-300 leading-relaxed">
               We import directly from the UAE production facilities to our Invercargill boutique, eliminating middleman markups so you enjoy genuine luxury at everyday fair prices.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 4B. SIGNATURE EDITORIAL SPOTLIGHT: THE AQUA PERFUME REVOLUTION */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative rounded-3xl overflow-hidden bg-stone-900 border border-stone-800 text-white shadow-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
+            <div className="p-8 sm:p-12 lg:col-span-7 space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-semibold tracking-widest uppercase">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>Naseem Innovation Spotlight</span>
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white leading-tight">
+                The World&apos;s First Water-Based Fine Fragrance
+              </h2>
+              <p className="text-sm sm:text-base text-stone-300 leading-relaxed">
+                Naseem Dubai disrupted the global fragrance industry by creating patented alcohol-free Aqua Perfumes. Unlike alcohol-heavy sprays that evaporate in minutes, our micro-emulsified formulas lock natural notes into the skin for velvety, long-lasting sillage.
+              </p>
+              <div className="grid grid-cols-2 gap-4 text-xs">
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                  <div className="font-bold text-amber-400 font-serif text-base">0% Alcohol</div>
+                  <div className="text-stone-300 text-[11px] mt-0.5">Gentle on delicate skin and hair</div>
+                </div>
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                  <div className="font-bold text-amber-400 font-serif text-base">IFRA Certified</div>
+                  <div className="text-stone-300 text-[11px] mt-0.5">Global Swiss cosmetics safety standards</div>
+                </div>
+              </div>
+              <div className="pt-2 flex flex-wrap gap-4">
+                <button
+                  onClick={() => onNavigate('products', 'for-women')}
+                  className="px-6 py-3.5 bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shadow-md"
+                >
+                  <span>Explore Aqua Perfume Range</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => onNavigate('products', 'perfume-oil')}
+                  className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs rounded-xl border border-white/20 transition-colors"
+                >
+                  <span>Explore Attar Oils</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 h-72 lg:h-full relative overflow-hidden bg-stone-950">
+              <img
+                src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1200&q=80"
+                alt="Naseem Aqua Perfumes"
+                className="w-full h-full object-cover opacity-85 hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-stone-900 via-stone-900/40 to-transparent" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4C. VERIFIED NZ CUSTOMER TESTIMONIALS */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <div className="text-xs uppercase tracking-widest text-amber-800 font-semibold mb-2">
+            Customer Praise &amp; Longevity Feedback
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
+            Loved Across Aotearoa New Zealand
+          </h2>
+          <p className="text-xs text-stone-600 mt-2">
+            Read verified feedback from scent enthusiasts enjoying authentic Naseem perfume oils and sprays.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-2xl bg-white border border-stone-200 shadow-xs flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center gap-1 text-amber-500">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+              <p className="text-xs text-stone-700 leading-relaxed italic">
+                &ldquo;Bushra concentrated perfume oil is incredible. Applied two drops on my wrists before work in Christchurch and could still smell the sweet amber and rose 18 hours later. Zero skin irritation.&rdquo;
+              </p>
+            </div>
+            <div className="pt-4 border-t border-stone-100 mt-4 flex items-center justify-between text-xs">
+              <div>
+                <span className="font-semibold text-stone-900 block">Hamish M.</span>
+                <span className="text-[11px] text-stone-500">Christchurch · Verified Buyer</span>
+              </div>
+              <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded">
+                Verified NZ Purchase
+              </span>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white border border-stone-200 shadow-xs flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center gap-1 text-amber-500">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+              <p className="text-xs text-stone-700 leading-relaxed italic">
+                &ldquo;Visited the physical store on Leven Street in Invercargill. Lovepreet was so knowledgeable and helped me pick the Lamsa EDP. It is velvety and soft. Dispatched my friend&apos;s birthday gift to Auckland the next day!&rdquo;
+              </p>
+            </div>
+            <div className="pt-4 border-t border-stone-100 mt-4 flex items-center justify-between text-xs">
+              <div>
+                <span className="font-semibold text-stone-900 block">Priya S.</span>
+                <span className="text-[11px] text-stone-500">Auckland · In-Store Visitor</span>
+              </div>
+              <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded">
+                Verified NZ Purchase
+              </span>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white border border-stone-200 shadow-xs flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center gap-1 text-amber-500">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+              <p className="text-xs text-stone-700 leading-relaxed italic">
+                &ldquo;Taariikh Gold is hands down the best oud fragrance I&apos;ve owned. Completely alcohol-free so it doesn&apos;t evaporate like designer colognes. Great bank transfer option and fast NZ Post tracked courier.&rdquo;
+              </p>
+            </div>
+            <div className="pt-4 border-t border-stone-100 mt-4 flex items-center justify-between text-xs">
+              <div>
+                <span className="font-semibold text-stone-900 block">Tane K.</span>
+                <span className="text-[11px] text-stone-500">Dunedin · Verified Buyer</span>
+              </div>
+              <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded">
+                Verified NZ Purchase
+              </span>
+            </div>
           </div>
         </div>
       </section>

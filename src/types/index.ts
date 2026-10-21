@@ -95,3 +95,32 @@ export interface GalleryItem {
   image: string;
   category: ProductCategory | 'all';
 }
+
+export interface HeroBannerConfig {
+  enabled: boolean;
+  announcementText: string;
+  showAnnouncement: boolean;
+  badgeText: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  backgroundImage: string;
+  alignment: 'left' | 'center' | 'right';
+  overlayDarkness: number; // 0 to 90 percentage
+  textColorScheme: 'dark' | 'light';
+  primaryCtaText: string;
+  primaryCtaLink: 'products' | 'categories' | 'contact' | 'about';
+  showPrimaryCta: boolean;
+  secondaryCtaText: string;
+  secondaryCtaLink: 'products' | 'categories' | 'contact' | 'about';
+  showSecondaryCta: boolean;
+  showTrustBadges: boolean;
+  trustBadge1Title: string;
+  trustBadge1Sub: string;
+  trustBadge2Title: string;
+  trustBadge2Sub: string;
+  trustBadge3Title: string;
+  trustBadge3Sub: string;
+  featuredProductId?: string;
+  showFeaturedProductCard: boolean;
+}

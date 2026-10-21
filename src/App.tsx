@@ -4,8 +4,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Product, CartItem, Order, LoyaltyMember, GalleryItem, ProductCategory } from './types';
-import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_LOYALTY, INITIAL_GALLERY } from './data/initialData';
+import { Product, CartItem, Order, LoyaltyMember, GalleryItem, ProductCategory, HeroBannerConfig } from './types';
+import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_LOYALTY, INITIAL_GALLERY, INITIAL_HERO_CONFIG } from './data/initialData';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { ProductModal } from './components/ProductModal';
@@ -53,6 +53,11 @@ export default function App() {
     return saved ? JSON.parse(saved) : INITIAL_GALLERY;
   });
 
+  const [heroConfig, setHeroConfig] = useState<HeroBannerConfig>(() => {
+    const saved = localStorage.getItem('eperfume_hero_config');
+    return saved ? JSON.parse(saved) : INITIAL_HERO_CONFIG;
+  });
+
   // Modal States
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -87,6 +92,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('eperfume_gallery', JSON.stringify(gallery));
   }, [gallery]);
+
+  useEffect(() => {
+    localStorage.setItem('eperfume_hero_config', JSON.stringify(heroConfig));
+  }, [heroConfig]);
 
   // SEO standard page title update
   useEffect(() => {
@@ -261,6 +270,7 @@ export default function App() {
           <HomePage
             products={products}
             gallery={gallery}
+            heroConfig={heroConfig}
             onAddToCart={handleAddToCart}
             onQuickView={(p) => setQuickViewProduct(p)}
             onNavigate={handleNavigate}
@@ -402,6 +412,11 @@ export default function App() {
         onUpdateOrderStatus={handleUpdateOrderStatus}
         gallery={gallery}
         onUpdateGallery={(newGal) => setGallery(newGal)}
+        heroConfig={heroConfig}
+        onUpdateHeroConfig={(newConfig) => {
+          setHeroConfig(newConfig);
+          showToast('Hero banner updated successfully');
+        }}
       />
 
       {/* GitHub & Vercel Linking Modal */}
