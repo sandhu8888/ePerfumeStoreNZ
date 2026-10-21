@@ -13,49 +13,88 @@ import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { OrderTrackingModal } from './components/OrderTrackingModal';
 import { AdminPortal } from './components/AdminPortal';
-import { GitHubModal } from './components/GitHubModal';
 import { HomePage } from './pages/HomePage';
 import { ProductsPage } from './pages/ProductsPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
-import { Check, Search, X } from 'lucide-react';
+import { Check, Search, X, ShieldCheck } from 'lucide-react';
 
 export default function App() {
   // Navigation State
   const [activeTab, setActiveTab] = useState<'home' | 'products' | 'about' | 'contact'>('home');
   const [categoryFilter, setCategoryFilter] = useState<ProductCategory | 'all'>('all');
 
-  // Persistence State
+  // Persistence State with fallback safety
   const [products, setProducts] = useState<Product[]>(() => {
-    const saved = localStorage.getItem('eperfume_products');
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
+    try {
+      const saved = localStorage.getItem('eperfume_products');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      // Fallback
+    }
+    return INITIAL_PRODUCTS;
   });
 
   const [orders, setOrders] = useState<Order[]>(() => {
-    const saved = localStorage.getItem('eperfume_orders');
-    return saved ? JSON.parse(saved) : INITIAL_ORDERS;
+    try {
+      const saved = localStorage.getItem('eperfume_orders');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {
+      // Fallback
+    }
+    return INITIAL_ORDERS;
   });
 
   const [cart, setCart] = useState<CartItem[]>(() => {
-    const saved = localStorage.getItem('eperfume_cart');
-    return saved ? JSON.parse(saved) : [
-      { product: INITIAL_PRODUCTS[0], quantity: 1 }
-    ];
+    try {
+      const saved = localStorage.getItem('eperfume_cart');
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // Fallback
+    }
+    return [{ product: INITIAL_PRODUCTS[0], quantity: 1 }];
   });
 
   const [loyaltyMember, setLoyaltyMember] = useState<LoyaltyMember>(() => {
-    const saved = localStorage.getItem('eperfume_loyalty');
-    return saved ? JSON.parse(saved) : INITIAL_LOYALTY;
+    try {
+      const saved = localStorage.getItem('eperfume_loyalty');
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // Fallback
+    }
+    return INITIAL_LOYALTY;
   });
 
   const [gallery, setGallery] = useState<GalleryItem[]>(() => {
-    const saved = localStorage.getItem('eperfume_gallery');
-    return saved ? JSON.parse(saved) : INITIAL_GALLERY;
+    try {
+      const saved = localStorage.getItem('eperfume_gallery');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      // Fallback
+    }
+    return INITIAL_GALLERY;
   });
 
   const [heroConfig, setHeroConfig] = useState<HeroBannerConfig>(() => {
-    const saved = localStorage.getItem('eperfume_hero_config');
-    return saved ? JSON.parse(saved) : INITIAL_HERO_CONFIG;
+    try {
+      const saved = localStorage.getItem('eperfume_hero_config');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return { ...INITIAL_HERO_CONFIG, ...parsed };
+      }
+    } catch {
+      // Fallback
+    }
+    return INITIAL_HERO_CONFIG;
   });
 
   // Modal States
@@ -64,7 +103,6 @@ export default function App() {
   const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [trackingOrderNumber, setTrackingOrderNumber] = useState('');
   const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [isGitHubOpen, setIsGitHubOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [quickSearchTerm, setQuickSearchTerm] = useState('');
@@ -96,6 +134,31 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('eperfume_hero_config', JSON.stringify(heroConfig));
   }, [heroConfig]);
+
+  // Handle URL hash or keyboard shortcut for instant admin access
+  useEffect(() => {
+    if (window.location.hash === '#admin' || window.location.search.includes('admin')) {
+      setIsAdminOpen(true);
+    }
+    const handleHash = () => {
+      if (window.location.hash === '#admin') {
+        setIsAdminOpen(true);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Alt+A or Ctrl+Alt+A toggles admin
+      if ((e.altKey && e.key.toLowerCase() === 'a') || (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a')) {
+        e.preventDefault();
+        setIsAdminOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('hashchange', handleHash);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   // SEO standard page title update
   useEffect(() => {
@@ -260,7 +323,7 @@ export default function App() {
         onNavigate={handleNavigate}
         cartCount={cartTotalItems}
         onOpenCart={() => setIsCartOpen(true)}
-        onOpenGitHub={() => setIsGitHubOpen(true)}
+        onOpenAdmin={() => setIsAdminOpen(true)}
         onSearchClick={() => setIsSearchOpen(true)}
       />
 
@@ -291,12 +354,24 @@ export default function App() {
         {activeTab === 'contact' && <ContactPage />}
       </main>
 
+      {/* Floating Instant Admin Portal Access Button (Bottom Left) */}
+      <aside aria-label="Store administration shortcut" className="fixed bottom-5 left-5 z-40">
+        <button
+          onClick={() => setIsAdminOpen(true)}
+          className="flex items-center gap-2 px-3.5 py-2 bg-stone-900/95 hover:bg-stone-950 text-amber-300 text-xs font-semibold rounded-full shadow-xl border border-amber-500/40 backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer group"
+          title="Open Admin Portal (Alt+A)"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+          <span>Admin Portal</span>
+        </button>
+      </aside>
+
       {/* Footer (Admin Portal in bottom) */}
       <Footer
         onNavigate={handleNavigate}
         onOpenTracking={() => handleOpenTrackingFromAnywhere()}
         onOpenAdmin={() => setIsAdminOpen(true)}
-        onOpenGitHub={() => setIsGitHubOpen(true)}
       />
 
       {/* Quick Search Modal */}
@@ -400,7 +475,7 @@ export default function App() {
         onAddToCart={handleAddToCart}
       />
 
-      {/* Admin Portal (Shopify & WooCommerce management) */}
+      {/* Admin Portal (Inventory, Orders, Invoices, Gallery & Hero Customizer) */}
       <AdminPortal
         isOpen={isAdminOpen}
         onClose={() => setIsAdminOpen(false)}
@@ -417,12 +492,6 @@ export default function App() {
           setHeroConfig(newConfig);
           showToast('Hero banner updated successfully');
         }}
-      />
-
-      {/* GitHub & Vercel Linking Modal */}
-      <GitHubModal
-        isOpen={isGitHubOpen}
-        onClose={() => setIsGitHubOpen(false)}
       />
     </div>
   );

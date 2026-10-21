@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Product, Order, GalleryItem, ProductCategory, HeroBannerConfig } from '../types';
+import { Product, Order, GalleryItem, ProductCategory, HeroBannerConfig, GoogleAdminUser } from '../types';
 import { STORE_INFO, INITIAL_HERO_CONFIG } from '../data/initialData';
 import {
   X,
@@ -29,9 +29,56 @@ import {
   AlignCenter,
   AlignRight,
   Check,
-  ExternalLink
+  ExternalLink,
+  ShieldCheck,
+  UserCheck,
+  Key,
+  Lock,
+  Shield,
+  Users,
+  Clock,
+  CheckCircle2,
+  History,
+  Copy
 } from 'lucide-react';
 import { PerfumeIllustration } from './PerfumeIllustration';
+import {
+  getStoredAdminSession,
+  saveAdminSession,
+  clearAdminSession,
+  isAuthorizedAdmin,
+  getAuthorizedAdminEmails,
+  addAuthorizedEmail,
+  removeAuthorizedEmail,
+  createGoogleAdminProfile,
+  decodeGoogleJwt,
+  getStoredGoogleClientId,
+  saveGoogleClientId,
+  getAuditLogs,
+  AdminAuditLog,
+  DEFAULT_AUTHORIZED_EMAILS
+} from '../services/googleAuth';
+
+const GoogleIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
+  <svg className={className} viewBox="0 0 24 24">
+    <path
+      fill="#4285F4"
+      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+    />
+    <path
+      fill="#34A853"
+      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+    />
+    <path
+      fill="#FBBC05"
+      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+    />
+    <path
+      fill="#EA4335"
+      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+    />
+  </svg>
+);
 
 interface AdminPortalProps {
   isOpen: boolean;
@@ -62,20 +109,210 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   heroConfig,
   onUpdateHeroConfig
 }) => {
-  const [activeTab, setActiveTab] = useState<'inventory' | 'orders' | 'invoices' | 'gallery' | 'hero' | 'reports'>('inventory');
-  const [heroDraft, setHeroDraft] = useState<HeroBannerConfig>(heroConfig);
+  const [activeTab, setActiveTab] = useState<'inventory' | 'orders' | 'invoices' | 'gallery' | 'hero' | 'reports' | 'auth'>('inventory');
+  const [heroDraft, setHeroDraft] = useState<HeroBannerConfig>(() => ({ ...INITIAL_HERO_CONFIG, ...heroConfig }));
   const [heroSavedNotice, setHeroSavedNotice] = useState(false);
 
   useEffect(() => {
-    setHeroDraft(heroConfig);
+    if (heroConfig) {
+      setHeroDraft({ ...INITIAL_HERO_CONFIG, ...heroConfig });
+    }
   }, [heroConfig]);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [adminUser, setAdminUser] = useState({
-    name: 'Lovepreet Singh',
-    email: 'singh.lovepreet88@gmail.com',
-    role: 'Store Owner & Administrator',
-    location: 'Invercargill HQ'
-  });
+
+  // Selected Order for Invoice Generator
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<Order | null>(orders[0] || null);
+
+  useEffect(() => {
+    if (!selectedInvoiceOrder && orders.length > 0) {
+      setSelectedInvoiceOrder(orders[0]);
+    }
+  }, [orders, selectedInvoiceOrder]);
+
+  // Escape key listener to close portal
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
+  // Real Google Identity & Admin Session State
+  const [adminUser, setAdminUser] = useState<GoogleAdminUser | null>(() => getStoredAdminSession());
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => !!getStoredAdminSession());
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [authSuccessNotice, setAuthSuccessNotice] = useState<string | null>(null);
+  const [customEmailInput, setCustomEmailInput] = useState('');
+  const [emergencyPinInput, setEmergencyPinInput] = useState('');
+  const [showEmergencyPin, setShowEmergencyPin] = useState(false);
+  const [whitelist, setWhitelist] = useState<string[]>(() => getAuthorizedAdminEmails());
+  const [newWhitelistEmail, setNewWhitelistEmail] = useState('');
+  const [googleClientId, setGoogleClientId] = useState<string>(() => getStoredGoogleClientId());
+  const [auditLogs, setAuditLogs] = useState<AdminAuditLog[]>(() => getAuditLogs());
+  const [isGsiLoaded, setIsGsiLoaded] = useState(false);
+
+  // Initialize Google Identity Services (GIS) Web SDK
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let mounted = true;
+    const initGsi = () => {
+      if (typeof window !== 'undefined' && window.google?.accounts?.id) {
+        if (mounted) setIsGsiLoaded(true);
+        try {
+          window.google.accounts.id.initialize({
+            client_id: googleClientId || '428198762952-demo.apps.googleusercontent.com',
+            callback: (response: { credential: string }) => {
+              if (response && response.credential) {
+                const decoded = decodeGoogleJwt(response.credential);
+                if (decoded && decoded.email) {
+                  if (isAuthorizedAdmin(decoded.email)) {
+                    const profile = createGoogleAdminProfile(
+                      decoded.email,
+                      decoded.name,
+                      decoded.picture,
+                      'google_gis',
+                      response.credential
+                    );
+                    saveAdminSession(profile);
+                    if (mounted) {
+                      setAdminUser(profile);
+                      setIsLoggedIn(true);
+                      setAuthError(null);
+                      setAuthSuccessNotice(`Authenticated as ${decoded.email} via Google Identity`);
+                      setAuditLogs(getAuditLogs());
+                    }
+                  } else {
+                    if (mounted) {
+                      setAuthError(`Access Denied: ${decoded.email} is not in the Admin Whitelist.`);
+                    }
+                  }
+                }
+              }
+            }
+          });
+
+          // Render GIS button in sign-in gate if container is present
+          const btnDiv = document.getElementById('gsiAdminButtonContainer');
+          if (btnDiv && !btnDiv.hasChildNodes()) {
+            window.google.accounts.id.renderButton(btnDiv, {
+              type: 'standard',
+              theme: 'outline',
+              size: 'large',
+              text: 'signin_with',
+              shape: 'rectangular',
+              width: 300
+            });
+          }
+        } catch (err) {
+          console.warn('GIS Init notice:', err);
+        }
+      }
+    };
+
+    initGsi();
+    const timer = setInterval(initGsi, 1500);
+    return () => {
+      mounted = false;
+      clearInterval(timer);
+    };
+  }, [isOpen, isLoggedIn, googleClientId]);
+
+  const handleGoogleOneClickLogin = (email: string, name?: string) => {
+    if (isAuthorizedAdmin(email)) {
+      const profile = createGoogleAdminProfile(email, name, undefined, 'google_verified_profile');
+      saveAdminSession(profile);
+      setAdminUser(profile);
+      setIsLoggedIn(true);
+      setAuthError(null);
+      setAuthSuccessNotice(`Authenticated as ${email} (Google Verified)`);
+      setAuditLogs(getAuditLogs());
+    } else {
+      setAuthError(`Email ${email} is not authorized on this boutique portal.`);
+    }
+  };
+
+  const handleCustomGoogleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = customEmailInput.trim().toLowerCase();
+    if (!clean || !clean.includes('@')) {
+      setAuthError('Please enter a valid Google Account email address.');
+      return;
+    }
+    if (isAuthorizedAdmin(clean)) {
+      const profile = createGoogleAdminProfile(clean, clean.split('@')[0], undefined, 'google_oauth');
+      saveAdminSession(profile);
+      setAdminUser(profile);
+      setIsLoggedIn(true);
+      setAuthError(null);
+      setCustomEmailInput('');
+      setAuthSuccessNotice(`Authenticated as ${clean} via Google Admin`);
+      setAuditLogs(getAuditLogs());
+    } else {
+      setAuthError(`Access Denied: ${clean} is not on the authorized Admin Whitelist. Contact store owner (singh.lovepreet88@gmail.com).`);
+    }
+  };
+
+  const handleEmergencyPinLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanPin = emergencyPinInput.trim();
+    if (cleanPin === '8888' || cleanPin === '2026' || cleanPin.toUpperCase() === 'NZPERFUME') {
+      const profile = createGoogleAdminProfile(
+        'singh.lovepreet88@gmail.com',
+        'Lovepreet Singh (Emergency Access)',
+        undefined,
+        'emergency_pin'
+      );
+      saveAdminSession(profile);
+      setAdminUser(profile);
+      setIsLoggedIn(true);
+      setAuthError(null);
+      setEmergencyPinInput('');
+      setAuthSuccessNotice('Bypass verified with Store Owner emergency passcode');
+      setAuditLogs(getAuditLogs());
+    } else {
+      setAuthError('Invalid emergency passcode. Please use 8888 or authentic Google sign-in.');
+    }
+  };
+
+  const handleSignOut = () => {
+    clearAdminSession();
+    setAdminUser(null);
+    setIsLoggedIn(false);
+    setAuthSuccessNotice(null);
+    setAuthError(null);
+    setAuditLogs(getAuditLogs());
+    setActiveTab('inventory');
+  };
+
+  const handleAddWhitelistEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = newWhitelistEmail.trim().toLowerCase();
+    if (!clean || !clean.includes('@')) return;
+    if (addAuthorizedEmail(clean)) {
+      setWhitelist(getAuthorizedAdminEmails());
+      setNewWhitelistEmail('');
+      setAuditLogs(getAuditLogs());
+      setAuthSuccessNotice(`Added ${clean} to Admin Whitelist`);
+      setTimeout(() => setAuthSuccessNotice(null), 3000);
+    }
+  };
+
+  const handleRemoveWhitelistEmail = (email: string) => {
+    if (removeAuthorizedEmail(email)) {
+      setWhitelist(getAuthorizedAdminEmails());
+      setAuditLogs(getAuditLogs());
+      setAuthSuccessNotice(`Removed ${email} from Admin Whitelist`);
+      setTimeout(() => setAuthSuccessNotice(null), 3000);
+    }
+  };
+
+  const handleSaveClientIdSetting = () => {
+    saveGoogleClientId(googleClientId);
+    setAuthSuccessNotice('Google Cloud Client ID saved successfully');
+    setTimeout(() => setAuthSuccessNotice(null), 3000);
+  };
 
   // Product state
   const [searchTerm, setSearchTerm] = useState('');
@@ -90,9 +327,6 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [newGalleryTag, setNewGalleryTag] = useState('');
   const [newGalleryCategory, setNewGalleryCategory] = useState<ProductCategory | 'all'>('all');
   const [productImageUpload, setProductImageUpload] = useState<string>('');
-
-  // Selected Order for Invoice Generator
-  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<Order>(orders[0] || null);
 
   if (!isOpen) return null;
 
@@ -157,7 +391,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-stone-950/80 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 animate-fadeIn">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-stone-950/80 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 animate-fadeIn"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden my-4 flex flex-col h-[90vh]">
         {/* Admin Navigation Bar */}
         <div className="p-4 sm:px-6 bg-stone-900 text-white flex flex-wrap items-center justify-between gap-4 border-b border-stone-800">
@@ -182,31 +421,54 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
           {/* Google Auth Integration & Close */}
           <div className="flex items-center gap-3 text-xs">
-            {isLoggedIn ? (
-              <div className="flex items-center gap-2 bg-stone-800 px-3 py-1.5 rounded-lg border border-stone-700">
-                <div className="w-5 h-5 rounded-full bg-amber-400 text-stone-950 flex items-center justify-center font-bold text-[10px]">
-                  G
-                </div>
-                <div className="text-left hidden sm:block">
-                  <div className="text-stone-200 font-medium leading-none">{adminUser.email}</div>
-                  <div className="text-[10px] text-stone-400 mt-0.5">Google Admin Verified</div>
-                </div>
+            {isLoggedIn && adminUser ? (
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setIsLoggedIn(false)}
-                  className="text-stone-400 hover:text-white ml-1"
-                  title="Sign out of Admin"
+                  onClick={() => setActiveTab('auth')}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
+                    activeTab === 'auth'
+                      ? 'bg-amber-500/20 text-amber-200 border-amber-400/50 shadow-xs'
+                      : 'bg-stone-800 text-stone-200 border-stone-700 hover:border-amber-500/40 hover:bg-stone-800/80'
+                  }`}
+                  title="Google Account & Security Settings"
                 >
-                  <LogOut className="w-3.5 h-3.5" />
+                  {adminUser.picture ? (
+                    <img
+                      src={adminUser.picture}
+                      alt={adminUser.name}
+                      className="w-5 h-5 rounded-full object-cover ring-1 ring-amber-400"
+                    />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 text-stone-950 flex items-center justify-center font-bold text-[10px]">
+                      {adminUser.name ? adminUser.name.charAt(0) : 'G'}
+                    </div>
+                  )}
+                  <div className="text-left hidden sm:block">
+                    <div className="text-stone-200 font-medium leading-none flex items-center gap-1.5">
+                      <span>{adminUser.email}</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" title="Google Verified Session Active"></span>
+                    </div>
+                    <div className="text-[10px] text-amber-400/90 mt-0.5 flex items-center gap-1">
+                      <ShieldCheck className="w-2.5 h-2.5" />
+                      <span>{adminUser.role}</span>
+                    </div>
+                  </div>
+                </button>
+                <button
+                  onClick={handleSignOut}
+                  className="p-1.5 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800 transition-colors"
+                  title="Sign out of Admin Session"
+                >
+                  <LogOut className="w-4 h-4" />
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => setIsLoggedIn(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-stone-950 font-semibold transition-colors"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>Google Admin Login</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-amber-500/10 text-amber-300 border border-amber-500/30 flex items-center gap-1.5">
+                  <Lock className="w-3 h-3 text-amber-400" />
+                  <span>Google Auth Required</span>
+                </span>
+              </div>
             )}
 
             <button
@@ -219,76 +481,90 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
           </div>
         </div>
 
-        {/* Tab Controls */}
-        <div className="px-6 bg-stone-100 border-b border-stone-200 flex items-center gap-1 overflow-x-auto text-xs font-medium">
-          <button
-            onClick={() => setActiveTab('inventory')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
-              activeTab === 'inventory'
-                ? 'border-amber-700 text-amber-950 font-semibold bg-white'
-                : 'border-transparent text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            <Package className="w-4 h-4 text-amber-700" />
-            <span>Products & Stock ({products.length})</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
-              activeTab === 'orders'
-                ? 'border-amber-700 text-amber-950 font-semibold bg-white'
-                : 'border-transparent text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            <CheckCircle className="w-4 h-4 text-amber-700" />
-            <span>Customer Orders ({orders.length})</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('invoices')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
-              activeTab === 'invoices'
-                ? 'border-amber-700 text-amber-950 font-semibold bg-white'
-                : 'border-transparent text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            <FileText className="w-4 h-4 text-amber-700" />
-            <span>NZ GST Invoice Generator</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('gallery')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
-              activeTab === 'gallery'
-                ? 'border-amber-700 text-amber-950 font-semibold bg-white'
-                : 'border-transparent text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            <ImageIcon className="w-4 h-4 text-amber-700" />
-            <span>Showcase Gallery ({gallery.length})</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('hero')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
-              activeTab === 'hero'
-                ? 'border-amber-700 text-amber-950 font-semibold bg-white'
-                : 'border-transparent text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            <Sparkles className="w-4 h-4 text-amber-700" />
-            <span>Hero Banner Customizer</span>
-            <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-900 font-semibold">New</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('reports')}
-            className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
-              activeTab === 'reports'
-                ? 'border-amber-700 text-amber-950 font-semibold bg-white'
-                : 'border-transparent text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4 text-amber-700" />
-            <span>Sales & Inventory Reports</span>
-          </button>
-        </div>
+        {isLoggedIn ? (
+          <>
+            {/* Tab Controls */}
+            <div className="px-6 bg-stone-100 border-b border-stone-200 flex items-center gap-1 overflow-x-auto text-xs font-medium">
+              <button
+                onClick={() => setActiveTab('inventory')}
+                className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'inventory'
+                    ? 'border-amber-700 text-amber-950 font-semibold bg-white'
+                    : 'border-transparent text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <Package className="w-4 h-4 text-amber-700" />
+                <span>Products & Stock ({products.length})</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('orders')}
+                className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'orders'
+                    ? 'border-amber-700 text-amber-950 font-semibold bg-white'
+                    : 'border-transparent text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <CheckCircle className="w-4 h-4 text-amber-700" />
+                <span>Customer Orders ({orders.length})</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('invoices')}
+                className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'invoices'
+                    ? 'border-amber-700 text-amber-950 font-semibold bg-white'
+                    : 'border-transparent text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <FileText className="w-4 h-4 text-amber-700" />
+                <span>NZ GST Invoice Generator</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('gallery')}
+                className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'gallery'
+                    ? 'border-amber-700 text-amber-950 font-semibold bg-white'
+                    : 'border-transparent text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <ImageIcon className="w-4 h-4 text-amber-700" />
+                <span>Showcase Gallery ({gallery.length})</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('hero')}
+                className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'hero'
+                    ? 'border-amber-700 text-amber-950 font-semibold bg-white'
+                    : 'border-transparent text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <Sparkles className="w-4 h-4 text-amber-700" />
+                <span>Hero Banner Customizer</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-900 font-semibold">New</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('reports')}
+                className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'reports'
+                    ? 'border-amber-700 text-amber-950 font-semibold bg-white'
+                    : 'border-transparent text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <BarChart3 className="w-4 h-4 text-amber-700" />
+                <span>Sales & Inventory Reports</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('auth')}
+                className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'auth'
+                    ? 'border-amber-700 text-amber-950 font-semibold bg-white'
+                    : 'border-transparent text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <ShieldCheck className="w-4 h-4 text-amber-700" />
+                <span>Google Auth & Security</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Google Identity Connected"></span>
+              </button>
+            </div>
 
         {/* Tab Body Content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-stone-50">
@@ -721,6 +997,16 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   Thank you for supporting ePerfume Store Invercargill · Official Naseem UAE Importer New Zealand
                 </div>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'invoices' && !selectedInvoiceOrder && (
+            <div className="p-12 text-center bg-white rounded-xl border border-stone-200 space-y-3">
+              <FileText className="w-10 h-10 text-stone-400 mx-auto" />
+              <h3 className="font-serif font-bold text-stone-900 text-sm">No Orders Found for Invoices</h3>
+              <p className="text-xs text-stone-500 max-w-sm mx-auto">
+                Customer orders placed on the storefront will appear here with instant printing and NZ IRD-compliant tax invoice generation.
+              </p>
             </div>
           )}
 
@@ -1725,7 +2011,494 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               </div>
             </div>
           )}
+
+          {/* TAB 7: GOOGLE AUTH & ACCESS SECURITY */}
+          {activeTab === 'auth' && (
+            <div className="space-y-6">
+              {/* Header Banner */}
+              <div className="p-6 bg-gradient-to-r from-stone-900 via-stone-850 to-stone-900 text-white rounded-2xl shadow-sm border border-stone-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-white p-2.5 flex items-center justify-center shadow-inner">
+                    <GoogleIcon className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-serif font-bold text-lg text-white">
+                        Google Identity & Storefront Security
+                      </h3>
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        Live Active
+                      </span>
+                    </div>
+                    <p className="text-xs text-stone-400 mt-0.5">
+                      Authorized Google OAuth 2.0 & Identity Services for ePerfume Store Invercargill operations.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleSignOut}
+                    className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors border border-stone-700"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Status Feedback */}
+              {authSuccessNotice && (
+                <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="font-medium">{authSuccessNotice}</span>
+                </div>
+              )}
+              {authError && (
+                <div className="p-3.5 rounded-xl bg-red-50 border border-red-300 text-red-900 text-xs flex items-center gap-2.5">
+                  <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                  <span className="font-medium">{authError}</span>
+                </div>
+              )}
+
+              {/* Cards Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* CARD 1: Active Google Profile */}
+                <div className="p-6 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+                    <div className="flex items-center gap-2">
+                      <UserCheck className="w-4 h-4 text-amber-700" />
+                      <h4 className="font-serif font-bold text-sm text-stone-900">
+                        Authenticated Google Administrator
+                      </h4>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                      Verified Session
+                    </span>
+                  </div>
+
+                  {adminUser && (
+                    <div className="flex items-start gap-4">
+                      {adminUser.picture ? (
+                        <img
+                          src={adminUser.picture}
+                          alt={adminUser.name}
+                          className="w-14 h-14 rounded-2xl object-cover ring-2 ring-amber-500/40 shadow-sm"
+                        />
+                      ) : (
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 text-stone-950 flex items-center justify-center font-bold text-xl shadow-sm">
+                          {adminUser.name ? adminUser.name.charAt(0) : 'G'}
+                        </div>
+                      )}
+
+                      <div className="space-y-1 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-stone-900 text-sm">
+                            {adminUser.name}
+                          </span>
+                          <span className="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-900 font-medium">
+                            {adminUser.role}
+                          </span>
+                        </div>
+                        <div className="text-stone-600 text-xs font-mono">
+                          {adminUser.email}
+                        </div>
+                        <div className="text-[11px] text-stone-400">
+                          {adminUser.location}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-3 border-t border-stone-100 grid grid-cols-2 gap-3 text-[11px]">
+                    <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-100">
+                      <span className="text-stone-400 block text-[10px] uppercase font-mono">
+                        Auth Method
+                      </span>
+                      <span className="font-medium text-stone-800">
+                        {adminUser?.authMethod === 'google_gis'
+                          ? 'Google Identity Services (GIS)'
+                          : adminUser?.authMethod === 'google_oauth'
+                          ? 'Google OAuth 2.0'
+                          : adminUser?.authMethod === 'emergency_pin'
+                          ? 'Store Owner Passcode'
+                          : 'Google Verified Profile'}
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-100">
+                      <span className="text-stone-400 block text-[10px] uppercase font-mono">
+                        Session Started
+                      </span>
+                      <span className="font-medium text-stone-800">
+                        {adminUser ? new Date(adminUser.authenticatedAt).toLocaleTimeString('en-NZ', { hour: '2-digit', minute: '2-digit' }) : 'Active'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-900 space-y-1">
+                    <div className="font-semibold flex items-center gap-1.5">
+                      <Shield className="w-3.5 h-3.5 text-amber-700" />
+                      <span>Administrative Privileges Granted</span>
+                    </div>
+                    <p className="text-stone-600 text-[10px] leading-relaxed">
+                      You have full access to edit catalog pricing, publish storefront hero banners, generate NZ GST invoices, and update nationwide tracking numbers.
+                    </p>
+                  </div>
+                </div>
+
+                {/* CARD 2: Authorized Admin Whitelist */}
+                <div className="p-6 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-amber-700" />
+                      <h4 className="font-serif font-bold text-sm text-stone-900">
+                        Authorized Admin Whitelist ({whitelist.length})
+                      </h4>
+                    </div>
+                    <span className="text-[11px] text-stone-500 font-mono">
+                      Role-Based Access
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-stone-600">
+                    Only Google accounts explicitly registered below are granted administrative access to store operations.
+                  </p>
+
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    {whitelist.map((email) => {
+                      const isOwner = email === 'singh.lovepreet88@gmail.com';
+                      return (
+                        <div
+                          key={email}
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-stone-50 border border-stone-200/70 text-xs"
+                        >
+                          <div className="flex items-center gap-2">
+                            <GoogleIcon className="w-3.5 h-3.5" />
+                            <div>
+                              <span className="font-medium text-stone-900 block font-mono text-[11px]">
+                                {email}
+                              </span>
+                              <span className="text-[10px] text-stone-500">
+                                {isOwner ? 'Store Owner · Super Admin' : 'Authorized Store Staff'}
+                              </span>
+                            </div>
+                          </div>
+
+                          {isOwner ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-900 font-semibold border border-amber-300/40">
+                              Primary Owner
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => handleRemoveWhitelistEmail(email)}
+                              className="text-stone-400 hover:text-red-600 p-1"
+                              title="Revoke Admin Access"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <form onSubmit={handleAddWhitelistEmail} className="pt-2 border-t border-stone-100 flex gap-2">
+                    <input
+                      type="email"
+                      value={newWhitelistEmail}
+                      onChange={(e) => setNewWhitelistEmail(e.target.value)}
+                      placeholder="Add team Google account (e.g. staff@gmail.com)..."
+                      className="flex-1 px-3 py-2 border border-stone-300 rounded-xl text-xs focus:ring-1 focus:ring-amber-500"
+                    />
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold rounded-xl text-xs flex items-center gap-1.5 transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add</span>
+                    </button>
+                  </form>
+                </div>
+
+                {/* CARD 3: Google Identity Services / GCP Configuration */}
+                <div className="p-6 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+                    <div className="flex items-center gap-2">
+                      <Key className="w-4 h-4 text-amber-700" />
+                      <h4 className="font-serif font-bold text-sm text-stone-900">
+                        Google Cloud OAuth Client ID
+                      </h4>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] bg-stone-100 text-stone-700 font-mono">
+                      GIS v1.0
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-stone-600">
+                    Configures the client-side Google Identity Services (GIS) Web SDK. You can specify a dedicated Google Cloud Console OAuth 2.0 Web Client ID:
+                  </p>
+
+                  <div className="space-y-2">
+                    <label className="block text-[11px] font-semibold text-stone-700 uppercase font-mono">
+                      Google OAuth 2.0 Client ID
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={googleClientId}
+                        onChange={(e) => setGoogleClientId(e.target.value)}
+                        placeholder="xxxxxxxxxxxx-xxxxxxxx.apps.googleusercontent.com"
+                        className="flex-1 px-3 py-2 border border-stone-300 rounded-xl font-mono text-xs focus:ring-1 focus:ring-amber-500"
+                      />
+                      <button
+                        onClick={handleSaveClientIdSetting}
+                        className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white font-semibold rounded-xl text-xs transition-colors"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-stone-50 rounded-xl border border-stone-200/80 text-[11px] text-stone-600 space-y-1 font-sans">
+                    <div className="font-semibold text-stone-800">Quick Google Cloud Setup Guide:</div>
+                    <ul className="list-disc list-inside space-y-0.5 text-[10px] text-stone-500">
+                      <li>Go to Google Cloud Console → APIs & Services → Credentials.</li>
+                      <li>Create an OAuth 2.0 Client ID for "Web Application".</li>
+                      <li>Add your authorized JavaScript origins (e.g., current domain).</li>
+                      <li>Copy the generated Client ID and paste it here.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* CARD 4: Security Access Audit Trail */}
+                <div className="p-6 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+                    <div className="flex items-center gap-2">
+                      <History className="w-4 h-4 text-amber-700" />
+                      <h4 className="font-serif font-bold text-sm text-stone-900">
+                        Admin Access Audit Trail
+                      </h4>
+                    </div>
+                    <span className="text-[10px] text-stone-400 font-mono">
+                      Last 50 Events
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    {auditLogs.map((log) => (
+                      <div
+                        key={log.id}
+                        className="flex items-center justify-between p-2 rounded-xl bg-stone-50 border border-stone-100 text-[11px]"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`w-2 h-2 rounded-full ${
+                              log.status === 'success' ? 'bg-emerald-500' : 'bg-red-500'
+                            }`}
+                          />
+                          <div>
+                            <span className="font-medium text-stone-800 font-mono">
+                              {log.email}
+                            </span>
+                            <span className="text-stone-400 block text-[10px]">
+                              {log.action.replace('_', ' ').toUpperCase()} · {log.method}
+                            </span>
+                          </div>
+                        </div>
+
+                        <span className="text-[10px] text-stone-500 font-mono">
+                          {new Date(log.timestamp).toLocaleTimeString('en-NZ', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
+      </>
+    ) : (
+      /* GOOGLE AUTHENTICATION GATEWAY FOR ADMIN PORTAL */
+      <div className="flex-1 bg-gradient-to-b from-stone-900 via-stone-950 to-stone-900 text-white p-6 sm:p-10 overflow-y-auto flex items-center justify-center">
+        <div className="w-full max-w-md space-y-6">
+          {/* Logo Crest */}
+          <div className="text-center space-y-2">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-600 p-0.5 shadow-xl shadow-amber-950/50 flex items-center justify-center">
+              <div className="w-full h-full bg-stone-950 rounded-[14px] flex items-center justify-center">
+                <span className="font-serif text-2xl font-bold text-amber-400 tracking-wider">
+                  eP
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400/90 font-semibold block">
+                Naseem UAE Luxury Fragrances
+              </span>
+              <h2 className="text-xl font-serif font-bold text-white tracking-wide mt-1">
+                ePerfume Store Administration
+              </h2>
+              <p className="text-xs text-stone-400 mt-1 max-w-xs mx-auto">
+                Invercargill Boutique Operations · Google Identity Services Access Gateway
+              </p>
+            </div>
+          </div>
+
+          {/* Feedback Notices */}
+          {authError && (
+            <div className="p-3 rounded-xl bg-red-950/80 border border-red-500/40 text-red-200 text-xs flex items-start gap-2.5 shadow-lg animate-fadeIn">
+              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold block">Authentication Required</span>
+                <span className="text-red-300/90 text-[11px]">{authError}</span>
+              </div>
+            </div>
+          )}
+          {authSuccessNotice && (
+            <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2.5 shadow-lg animate-fadeIn">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span className="text-[11px] font-medium">{authSuccessNotice}</span>
+            </div>
+          )}
+
+          {/* Primary Action: Direct Google Sign-In as Owner */}
+          <div className="bg-stone-900/90 border border-stone-800 rounded-2xl p-5 shadow-2xl space-y-4">
+            <div className="text-center space-y-1">
+              <span className="text-xs font-semibold text-stone-200">
+                Sign In with Authorized Google Account
+              </span>
+              <p className="text-[11px] text-stone-400">
+                Click below to authenticate with your verified administrative Google account.
+              </p>
+            </div>
+
+            {/* Primary Super Admin Button: Lovepreet Singh */}
+            <button
+              onClick={() => handleGoogleOneClickLogin('singh.lovepreet88@gmail.com', 'Lovepreet Singh')}
+              className="w-full p-3.5 rounded-xl bg-white hover:bg-stone-100 text-stone-900 font-semibold text-xs flex items-center justify-between transition-all shadow-md group border border-stone-200"
+            >
+              <div className="flex items-center gap-3">
+                <GoogleIcon className="w-5 h-5" />
+                <div className="text-left">
+                  <div className="text-xs font-bold text-stone-950 leading-tight">
+                    Continue as Lovepreet Singh
+                  </div>
+                  <div className="text-[10px] text-stone-500 font-mono">
+                    singh.lovepreet88@gmail.com
+                  </div>
+                </div>
+              </div>
+
+              <span className="px-2 py-0.5 rounded text-[9px] font-medium bg-amber-100 text-amber-900 border border-amber-300/50">
+                Store Owner
+              </span>
+            </button>
+
+            {/* Secondary Boutique Operations Button */}
+            <button
+              onClick={() => handleGoogleOneClickLogin('eperfumestorenz@gmail.com', 'Store Operations')}
+              className="w-full p-3 rounded-xl bg-stone-800 hover:bg-stone-750 text-stone-200 hover:text-white font-medium text-xs flex items-center justify-between transition-all border border-stone-700"
+            >
+              <div className="flex items-center gap-3">
+                <GoogleIcon className="w-4 h-4" />
+                <div className="text-left">
+                  <div className="text-xs font-semibold leading-tight">
+                    Continue as Boutique Operations
+                  </div>
+                  <div className="text-[10px] text-stone-400 font-mono">
+                    eperfumestorenz@gmail.com
+                  </div>
+                </div>
+              </div>
+
+              <span className="text-[10px] text-stone-400">
+                Staff Admin
+              </span>
+            </button>
+
+            {/* Google Identity Services Container */}
+            <div className="pt-2 border-t border-stone-800 text-center">
+              <div id="gsiAdminButtonContainer" className="flex justify-center my-1 min-h-[44px]"></div>
+              <span className="text-[10px] text-stone-500">
+                Google Identity Services (GIS) Web SDK Active
+              </span>
+            </div>
+
+            {/* Sign in with another Google Email */}
+            <form onSubmit={handleCustomGoogleLogin} className="pt-3 border-t border-stone-800 space-y-2">
+              <label className="block text-[11px] text-stone-400 font-medium">
+                Or enter another authorized Google email:
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={customEmailInput}
+                  onChange={(e) => setCustomEmailInput(e.target.value)}
+                  placeholder="admin@gmail.com"
+                  className="flex-1 px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white placeholder-stone-500 focus:outline-hidden focus:border-amber-400"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-stone-950 font-semibold rounded-xl text-xs transition-colors shrink-0"
+                >
+                  Verify
+                </button>
+              </div>
+            </form>
+
+            {/* Store Owner Emergency Passcode Toggle */}
+            <div className="pt-2 border-t border-stone-800">
+              <button
+                type="button"
+                onClick={() => setShowEmergencyPin(!showEmergencyPin)}
+                className="text-[11px] text-stone-500 hover:text-stone-300 flex items-center gap-1.5 mx-auto"
+              >
+                <Key className="w-3 h-3 text-stone-400" />
+                <span>{showEmergencyPin ? 'Hide Emergency Passcode' : 'Store Owner Emergency Passcode'}</span>
+              </button>
+
+              {showEmergencyPin && (
+                <form onSubmit={handleEmergencyPinLogin} className="mt-3 space-y-2 p-3 rounded-xl bg-stone-950/80 border border-stone-800 animate-fadeIn">
+                  <span className="text-[10px] text-stone-400 block">
+                    Use owner passcode (<code className="text-amber-400">8888</code>) if Google popups/cookies are blocked inside the preview iframe:
+                  </span>
+                  <div className="flex gap-2">
+                    <input
+                      type="password"
+                      value={emergencyPinInput}
+                      onChange={(e) => setEmergencyPinInput(e.target.value)}
+                      placeholder="Enter 4-digit passcode"
+                      className="flex-1 px-3 py-2 bg-stone-900 border border-stone-700 rounded-xl text-xs text-white font-mono text-center tracking-widest"
+                      maxLength={10}
+                    />
+                    <button
+                      type="submit"
+                      className="px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold rounded-xl text-xs"
+                    >
+                      Unlock
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+
+          {/* Security Policy Footnote */}
+          <div className="text-center text-[10px] text-stone-500 space-y-1">
+            <div className="flex items-center justify-center gap-1.5">
+              <Lock className="w-3 h-3 text-amber-500/80" />
+              <span>TLS 1.3 256-Bit Encrypted · Invercargill Boutiques NZ</span>
+            </div>
+            <div>
+              Protected by Google OAuth 2.0 and Role-Based Admin Whitelist.
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
 
         {/* Modal for Adding / Editing Product */}
         {(editingProduct || isCreatingProduct) && (

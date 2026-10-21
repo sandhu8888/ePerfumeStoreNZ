@@ -57,10 +57,10 @@ export const HomePage: React.FC<HomePageProps> = ({
   const isLightText = heroConfig.textColorScheme === 'light';
 
   return (
-    <div className="space-y-16 sm:space-y-24 bg-white text-stone-900">
+    <div className="space-y-16 sm:space-y-24 bg-white text-stone-850">
       {/* 0. OPTIONAL LUXURY ANNOUNCEMENT TICKER (From Admin Hero Config) */}
       {heroConfig.showAnnouncement && heroConfig.announcementText && (
-        <div className="bg-stone-950 text-amber-300 py-2.5 px-4 text-center border-b border-stone-800">
+        <div className="bg-gradient-to-r from-amber-950 via-amber-900 to-amber-950 text-amber-100 py-2.5 px-4 text-center border-b border-amber-800/60 shadow-xs">
           <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-xs font-medium tracking-wider">
             <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <span>{heroConfig.announcementText}</span>
@@ -71,7 +71,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
       {/* 1. NASEEM LUXURY HERO SECTION (Fully Customizable from Admin Portal) */}
       {heroConfig.enabled && (
-        <section className="relative overflow-hidden min-h-[580px] lg:min-h-[660px] flex items-center border-b border-stone-200">
+        <section className="relative overflow-hidden min-h-[580px] lg:min-h-[660px] flex items-center border-b border-amber-900/20">
           {/* Background Image */}
           <img
             src={heroConfig.backgroundImage}
@@ -81,7 +81,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           {/* Dynamic Darkness Overlay (Set in Admin Portal) */}
           <div
-            className="absolute inset-0 bg-stone-950 transition-opacity"
+            className="absolute inset-0 bg-[#24150E] transition-opacity"
             style={{ opacity: heroConfig.overlayDarkness / 100 }}
           />
 
@@ -444,16 +444,16 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="mt-10 text-center">
           <button
             onClick={() => onNavigate('products', activeCategory)}
-            className="px-6 py-3 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-xl inline-flex items-center gap-2 transition-colors shadow-xs"
+            className="px-6 py-3 bg-amber-800 hover:bg-amber-700 text-white text-xs font-semibold rounded-xl inline-flex items-center gap-2 transition-colors shadow-xs"
           >
             <span>View All {filteredFeatured.length} Products in Catalog</span>
-            <ArrowRight className="w-4 h-4 text-amber-400" />
+            <ArrowRight className="w-4 h-4 text-amber-300" />
           </button>
         </div>
       </section>
 
       {/* 4. THE NASEEM UAE DISTINCTION (Craftsmanship & Value) */}
-      <section className="bg-stone-900 text-white py-16 px-4 sm:px-6 lg:px-8 rounded-3xl max-w-7xl mx-auto">
+      <section className="bg-gradient-to-br from-[#2D1B13] via-[#382218] to-[#2D1B13] border border-[#4E2F20] text-white py-16 px-4 sm:px-6 lg:px-8 rounded-3xl max-w-7xl mx-auto shadow-xl">
         <div className="max-w-3xl mx-auto text-center space-y-4 mb-12">
           <span className="text-xs uppercase tracking-widest text-amber-400 font-semibold">
             The Science &amp; Art of Naseem Dubai
@@ -461,38 +461,38 @@ export const HomePage: React.FC<HomePageProps> = ({
           <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white">
             Why Discerning Fragrance Lovers Choose Alcohol-Free Scents
           </h2>
-          <p className="text-sm text-stone-400 leading-relaxed">
+          <p className="text-sm text-amber-200/80 leading-relaxed">
             Conventional Western perfumes use up to 80% denatured ethanol alcohol, which evaporates quickly and dries the skin. Naseem perfumery uses pure oils and innovative aqua-base technology.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-6 rounded-2xl bg-stone-800/80 border border-stone-700/60 space-y-3">
+          <div className="p-6 rounded-2xl bg-[#3E271B]/90 border border-amber-700/40 space-y-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
               01
             </div>
             <h3 className="text-lg font-serif font-bold text-white">Intense 24-Hour Longevity</h3>
-            <p className="text-xs text-stone-300 leading-relaxed">
+            <p className="text-xs text-amber-100/80 leading-relaxed">
               Without volatile alcohol flashing off into thin air, the concentrated oils bind directly to pulse points and fabric fibers, unfolding true olfactory notes over 16 to 24+ hours.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-stone-800/80 border border-stone-700/60 space-y-3">
+          <div className="p-6 rounded-2xl bg-[#3E271B]/90 border border-amber-700/40 space-y-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
               02
             </div>
             <h3 className="text-lg font-serif font-bold text-white">Hypoallergenic &amp; Gentle</h3>
-            <p className="text-xs text-stone-300 leading-relaxed">
+            <p className="text-xs text-amber-100/80 leading-relaxed">
               Safe for sensitive skin, hair, and prayer rituals. Zero burning sensation, zero chemical alcohol sting, and 100% compliant with global IFRA cosmetics guidelines.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-stone-800/80 border border-stone-700/60 space-y-3">
+          <div className="p-6 rounded-2xl bg-[#3E271B]/90 border border-amber-700/40 space-y-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
               03
             </div>
             <h3 className="text-lg font-serif font-bold text-white">Direct Import Savings</h3>
-            <p className="text-xs text-stone-300 leading-relaxed">
+            <p className="text-xs text-amber-100/80 leading-relaxed">
               We import directly from the UAE production facilities to our Invercargill boutique, eliminating middleman markups so you enjoy genuine luxury at everyday fair prices.
             </p>
           </div>
@@ -501,7 +501,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
       {/* 4B. SIGNATURE EDITORIAL SPOTLIGHT: THE AQUA PERFUME REVOLUTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl overflow-hidden bg-stone-900 border border-stone-800 text-white shadow-xl">
+        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#2D1B13] via-[#352016] to-[#2D1B13] border border-[#4E2F20] text-white shadow-xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
             <div className="p-8 sm:p-12 lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-semibold tracking-widest uppercase">
@@ -511,23 +511,23 @@ export const HomePage: React.FC<HomePageProps> = ({
               <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white leading-tight">
                 The World&apos;s First Water-Based Fine Fragrance
               </h2>
-              <p className="text-sm sm:text-base text-stone-300 leading-relaxed">
+              <p className="text-sm sm:text-base text-amber-100/90 leading-relaxed">
                 Naseem Dubai disrupted the global fragrance industry by creating patented alcohol-free Aqua Perfumes. Unlike alcohol-heavy sprays that evaporate in minutes, our micro-emulsified formulas lock natural notes into the skin for velvety, long-lasting sillage.
               </p>
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="p-3 rounded-xl bg-white/5 border border-white/10">
                   <div className="font-bold text-amber-400 font-serif text-base">0% Alcohol</div>
-                  <div className="text-stone-300 text-[11px] mt-0.5">Gentle on delicate skin and hair</div>
+                  <div className="text-amber-200/80 text-[11px] mt-0.5">Gentle on delicate skin and hair</div>
                 </div>
                 <div className="p-3 rounded-xl bg-white/5 border border-white/10">
                   <div className="font-bold text-amber-400 font-serif text-base">IFRA Certified</div>
-                  <div className="text-stone-300 text-[11px] mt-0.5">Global Swiss cosmetics safety standards</div>
+                  <div className="text-amber-200/80 text-[11px] mt-0.5">Global Swiss cosmetics safety standards</div>
                 </div>
               </div>
               <div className="pt-2 flex flex-wrap gap-4">
                 <button
                   onClick={() => onNavigate('products', 'for-women')}
-                  className="px-6 py-3.5 bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shadow-md"
+                  className="px-6 py-3.5 bg-amber-700 hover:bg-amber-600 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shadow-md"
                 >
                   <span>Explore Aqua Perfume Range</span>
                   <ArrowRight className="w-4 h-4" />
@@ -541,13 +541,13 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
             </div>
 
-            <div className="lg:col-span-5 h-72 lg:h-full relative overflow-hidden bg-stone-950">
+            <div className="lg:col-span-5 h-72 lg:h-full relative overflow-hidden bg-[#24160E]">
               <img
                 src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1200&q=80"
                 alt="Naseem Aqua Perfumes"
                 className="w-full h-full object-cover opacity-85 hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-stone-900 via-stone-900/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-[#2D1B13] via-[#2D1B13]/50 to-transparent" />
             </div>
           </div>
         </div>

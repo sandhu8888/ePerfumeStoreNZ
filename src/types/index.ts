@@ -124,3 +124,15 @@ export interface HeroBannerConfig {
   featuredProductId?: string;
   showFeaturedProductCard: boolean;
 }
+
+export interface GoogleAdminUser {
+  id: string;
+  name: string;
+  email: string;
+  picture?: string;
+  role: 'Super Admin' | 'Store Manager' | 'Operations Admin';
+  location: string;
+  authMethod: 'google_gis' | 'google_oauth' | 'google_verified_profile' | 'emergency_pin';
+  authenticatedAt: string;
+  token?: string;
+}
