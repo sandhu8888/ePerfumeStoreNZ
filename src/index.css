@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "Space Mono", monospace;
+  --color-gold-50: #fcfaf4;
+  --color-gold-100: #f7f1df;
+  --color-gold-200: #eee0b8;
+  --color-gold-300: #e2cb8a;
+  --color-gold-400: #d6b359;
+  --color-gold-500: #c69931;
+  --color-gold-600: #a77724;
+  --color-gold-700: #84571d;
+  --color-gold-800: #6c441b;
+  --color-gold-900: #573718;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #faf8f5;
+  color: #1c1917;
+}
+
+/* Print Invoice styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-invoice, #printable-invoice * {
+    visibility: visible;
+  }
+  #printable-invoice {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    background: white;
+  }
+}
