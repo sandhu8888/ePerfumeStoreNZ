@@ -39,7 +39,8 @@ import {
   Clock,
   CheckCircle2,
   History,
-  Copy
+  Copy,
+  EyeOff
 } from 'lucide-react';
 import { PerfumeIllustration } from './PerfumeIllustration';
 import {
@@ -56,7 +57,11 @@ import {
   saveGoogleClientId,
   getAuditLogs,
   AdminAuditLog,
-  DEFAULT_AUTHORIZED_EMAILS
+  DEFAULT_AUTHORIZED_EMAILS,
+  getAdminMasterPasscode,
+  setAdminMasterPasscode,
+  verifyAdminCredentials,
+  DEFAULT_MASTER_PASSCODE
 } from '../services/googleAuth';
 
 const GoogleIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
@@ -138,19 +143,49 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     return () => window.removeEventListener('keydown', handleEsc);
   }, [isOpen, onClose]);
 
-  // Real Google Identity & Admin Session State
+  // Real Admin Identity & Session State
   const [adminUser, setAdminUser] = useState<GoogleAdminUser | null>(() => getStoredAdminSession());
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => !!getStoredAdminSession());
   const [authError, setAuthError] = useState<string | null>(null);
   const [authSuccessNotice, setAuthSuccessNotice] = useState<string | null>(null);
-  const [customEmailInput, setCustomEmailInput] = useState('');
-  const [emergencyPinInput, setEmergencyPinInput] = useState('');
-  const [showEmergencyPin, setShowEmergencyPin] = useState(false);
+  
+  // Credentials Login Form State
+  const [loginEmail, setLoginEmail] = useState('singh.lovepreet88@gmail.com');
+  const [loginPasscode, setLoginPasscode] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [rememberSession, setRememberSession] = useState(false);
+  const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
+  const [authMethodTab, setAuthMethodTab] = useState<'credentials' | 'google'>('credentials');
+
+  // Master Passcode Change State (in settings tab)
+  const [currentPasscodeInput, setCurrentPasscodeInput] = useState('');
+  const [newPasscodeInput, setNewPasscodeInput] = useState('');
+  const [confirmPasscodeInput, setConfirmPasscodeInput] = useState('');
+  const [passcodeChangeError, setPasscodeChangeError] = useState<string | null>(null);
+  const [passcodeChangeSuccess, setPasscodeChangeSuccess] = useState<string | null>(null);
+
   const [whitelist, setWhitelist] = useState<string[]>(() => getAuthorizedAdminEmails());
   const [newWhitelistEmail, setNewWhitelistEmail] = useState('');
   const [googleClientId, setGoogleClientId] = useState<string>(() => getStoredGoogleClientId());
   const [auditLogs, setAuditLogs] = useState<AdminAuditLog[]>(() => getAuditLogs());
   const [isGsiLoaded, setIsGsiLoaded] = useState(false);
+
+  // Validate and enforce session lock whenever Admin Portal is opened
+  useEffect(() => {
+    if (isOpen) {
+      const activeSession = getStoredAdminSession();
+      if (!activeSession) {
+        setIsLoggedIn(false);
+        setAdminUser(null);
+      } else {
+        setIsLoggedIn(true);
+        setAdminUser(activeSession);
+      }
+      setAuthError(null);
+      setAuthSuccessNotice(null);
+      setLoginPasscode('');
+    }
+  }, [isOpen]);
 
   // Initialize Google Identity Services (GIS) Web SDK
   useEffect(() => {
@@ -219,60 +254,65 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     };
   }, [isOpen, isLoggedIn, googleClientId]);
 
-  const handleGoogleOneClickLogin = (email: string, name?: string) => {
-    if (isAuthorizedAdmin(email)) {
-      const profile = createGoogleAdminProfile(email, name, undefined, 'google_verified_profile');
-      saveAdminSession(profile);
-      setAdminUser(profile);
-      setIsLoggedIn(true);
-      setAuthError(null);
-      setAuthSuccessNotice(`Authenticated as ${email} (Google Verified)`);
-      setAuditLogs(getAuditLogs());
-    } else {
-      setAuthError(`Email ${email} is not authorized on this boutique portal.`);
-    }
-  };
-
-  const handleCustomGoogleLogin = (e: React.FormEvent) => {
+  const handleCredentialsLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const clean = customEmailInput.trim().toLowerCase();
-    if (!clean || !clean.includes('@')) {
-      setAuthError('Please enter a valid Google Account email address.');
+    setIsSubmittingAuth(true);
+    setAuthError(null);
+    setAuthSuccessNotice(null);
+
+    const result = verifyAdminCredentials(loginEmail, loginPasscode);
+    if (!result.success) {
+      setAuthError(result.error || 'Authentication failed. Please verify your credentials.');
+      setIsSubmittingAuth(false);
       return;
     }
-    if (isAuthorizedAdmin(clean)) {
-      const profile = createGoogleAdminProfile(clean, clean.split('@')[0], undefined, 'google_oauth');
-      saveAdminSession(profile);
-      setAdminUser(profile);
-      setIsLoggedIn(true);
-      setAuthError(null);
-      setCustomEmailInput('');
-      setAuthSuccessNotice(`Authenticated as ${clean} via Google Admin`);
-      setAuditLogs(getAuditLogs());
-    } else {
-      setAuthError(`Access Denied: ${clean} is not on the authorized Admin Whitelist. Contact store owner (singh.lovepreet88@gmail.com).`);
-    }
+
+    const cleanEmail = loginEmail.toLowerCase().trim();
+    const isSuperOwner = cleanEmail === 'singh.lovepreet88@gmail.com';
+    const profile = createGoogleAdminProfile(
+      cleanEmail,
+      isSuperOwner ? 'Lovepreet Singh' : 'Boutique Operations',
+      undefined,
+      'admin_credentials' as any
+    );
+
+    saveAdminSession(profile, rememberSession);
+    setAdminUser(profile);
+    setIsLoggedIn(true);
+    setLoginPasscode('');
+    setIsSubmittingAuth(false);
+    setAuthSuccessNotice(`Authenticated as ${cleanEmail} (Administrator)`);
+    setAuditLogs(getAuditLogs());
   };
 
-  const handleEmergencyPinLogin = (e: React.FormEvent) => {
+  const handleUpdateMasterPasscode = (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanPin = emergencyPinInput.trim();
-    if (cleanPin === '8888' || cleanPin === '2026' || cleanPin.toUpperCase() === 'NZPERFUME') {
-      const profile = createGoogleAdminProfile(
-        'singh.lovepreet88@gmail.com',
-        'Lovepreet Singh (Emergency Access)',
-        undefined,
-        'emergency_pin'
-      );
-      saveAdminSession(profile);
-      setAdminUser(profile);
-      setIsLoggedIn(true);
-      setAuthError(null);
-      setEmergencyPinInput('');
-      setAuthSuccessNotice('Bypass verified with Store Owner emergency passcode');
+    setPasscodeChangeError(null);
+    setPasscodeChangeSuccess(null);
+
+    const currentActual = getAdminMasterPasscode();
+    if (currentPasscodeInput.trim() !== currentActual) {
+      setPasscodeChangeError('Current passcode is incorrect.');
+      return;
+    }
+    if (newPasscodeInput.trim().length < 4) {
+      setPasscodeChangeError('New passcode must be at least 4 characters.');
+      return;
+    }
+    if (newPasscodeInput.trim() !== confirmPasscodeInput.trim()) {
+      setPasscodeChangeError('New passcode and confirmation do not match.');
+      return;
+    }
+
+    if (setAdminMasterPasscode(newPasscodeInput.trim())) {
+      setPasscodeChangeSuccess('Master Admin Passcode updated successfully.');
+      setCurrentPasscodeInput('');
+      setNewPasscodeInput('');
+      setConfirmPasscodeInput('');
       setAuditLogs(getAuditLogs());
+      setTimeout(() => setPasscodeChangeSuccess(null), 4000);
     } else {
-      setAuthError('Invalid emergency passcode. Please use 8888 or authentic Google sign-in.');
+      setPasscodeChangeError('Failed to update passcode.');
     }
   };
 
@@ -456,17 +496,17 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 </button>
                 <button
                   onClick={handleSignOut}
-                  className="p-1.5 text-stone-500 hover:text-black rounded-lg hover:bg-stone-100 transition-colors"
-                  title="Sign out of Admin Session"
+                  className="p-1.5 text-stone-500 hover:text-black rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
+                  title="Lock / Sign out of Admin Session"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-black border border-amber-300 flex items-center gap-1.5">
+                <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-black border border-amber-300 flex items-center gap-1.5 shadow-xs">
                   <Lock className="w-3 h-3 text-amber-800" />
-                  <span>Google Auth Required</span>
+                  <span>Authentication Required</span>
                 </span>
               </div>
             )}
@@ -2148,6 +2188,84 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   </div>
                 </div>
 
+                {/* CARD 1B: Master Admin Passcode Configuration */}
+                <div className="p-6 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+                    <div className="flex items-center gap-2">
+                      <Key className="w-4 h-4 text-amber-700" />
+                      <h4 className="font-serif font-bold text-sm text-black">
+                        Master Admin Passcode
+                      </h4>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-mono font-bold">
+                      Active
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-stone-600 font-medium">
+                    This passcode protects the Admin Portal from unauthorized access on any customer or staff device.
+                  </p>
+
+                  {passcodeChangeError && (
+                    <div className="p-2.5 rounded-lg bg-red-50 border border-red-300 text-red-900 text-xs font-medium">
+                      {passcodeChangeError}
+                    </div>
+                  )}
+
+                  {passcodeChangeSuccess && (
+                    <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-bold">
+                      {passcodeChangeSuccess}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleUpdateMasterPasscode} className="space-y-3 text-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <div>
+                        <label className="block text-black font-semibold mb-1">Current Passcode</label>
+                        <input
+                          type="password"
+                          required
+                          value={currentPasscodeInput}
+                          onChange={(e) => setCurrentPasscodeInput(e.target.value)}
+                          placeholder="e.g. 8888"
+                          className="w-full px-3 py-2 border border-stone-300 rounded-xl text-black font-mono text-center tracking-widest text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-black font-semibold mb-1">New Passcode</label>
+                        <input
+                          type="password"
+                          required
+                          value={newPasscodeInput}
+                          onChange={(e) => setNewPasscodeInput(e.target.value)}
+                          placeholder="Min 4 digits"
+                          className="w-full px-3 py-2 border border-stone-300 rounded-xl text-black font-mono text-center tracking-widest text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-black font-semibold mb-1">Confirm New</label>
+                        <input
+                          type="password"
+                          required
+                          value={confirmPasscodeInput}
+                          onChange={(e) => setConfirmPasscodeInput(e.target.value)}
+                          placeholder="Re-enter"
+                          className="w-full px-3 py-2 border border-stone-300 rounded-xl text-black font-mono text-center tracking-widest text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <button
+                        type="submit"
+                        className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-xl text-xs transition-colors cursor-pointer shadow-xs"
+                      >
+                        Update Master Passcode
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
                 {/* CARD 2: Authorized Admin Whitelist */}
                 <div className="p-6 bg-white rounded-2xl border border-stone-200 shadow-xs space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -2321,12 +2439,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
         </div>
       </>
     ) : (
-      /* GOOGLE AUTHENTICATION GATEWAY FOR ADMIN PORTAL */
+      /* SECURE AUTHENTICATION GATEWAY FOR ADMIN PORTAL */
       <div className="flex-1 bg-white text-black p-6 sm:p-10 overflow-y-auto flex items-center justify-center">
         <div className="w-full max-w-md space-y-6">
           {/* Logo Crest */}
           <div className="text-center space-y-2">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-600 p-0.5 shadow-md flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-600 p-0.5 shadow-md flex items-center justify-center">
               <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center border border-amber-300">
                 <span className="font-serif text-2xl font-bold text-amber-800 tracking-wider">
                   eP
@@ -2336,164 +2454,207 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
             <div>
               <span className="text-[10px] font-mono uppercase tracking-widest text-amber-800 font-bold block">
-                Naseem UAE Luxury Fragrances
+                Naseem UAE Luxury Fragrances · Invercargill NZ
               </span>
               <h2 className="text-xl font-serif font-bold text-black tracking-wide mt-1">
                 ePerfume Store Administration
               </h2>
               <p className="text-xs text-stone-600 font-medium mt-1 max-w-xs mx-auto">
-                Invercargill Boutique Operations · Google Identity Services Access Gateway
+                Authentication Required · Access strictly restricted to verified boutique managers
               </p>
             </div>
           </div>
 
           {/* Feedback Notices */}
           {authError && (
-            <div className="p-3 rounded-xl bg-red-50 border border-red-300 text-red-950 text-xs flex items-start gap-2.5 shadow-xs animate-fadeIn">
+            <div className="p-3.5 rounded-xl bg-red-50 border border-red-300 text-red-950 text-xs flex items-start gap-2.5 shadow-xs animate-fadeIn">
               <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold block">Authentication Required</span>
-                <span className="text-red-800 text-[11px] font-medium">{authError}</span>
+                <span className="font-bold block">Authentication Failed</span>
+                <span className="text-red-800 text-[11px] font-medium leading-relaxed">{authError}</span>
               </div>
             </div>
           )}
           {authSuccessNotice && (
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-950 text-xs flex items-center gap-2.5 shadow-xs animate-fadeIn">
+            <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-950 text-xs flex items-center gap-2.5 shadow-xs animate-fadeIn">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span className="text-[11px] font-bold">{authSuccessNotice}</span>
             </div>
           )}
 
-          {/* Primary Action: Direct Google Sign-In as Owner */}
-          <div className="bg-stone-50 border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4">
-            <div className="text-center space-y-1">
-              <span className="text-xs font-bold text-black">
-                Sign In with Authorized Google Account
-              </span>
-              <p className="text-[11px] text-stone-600 font-medium">
-                Click below to authenticate with your verified administrative Google account.
-              </p>
-            </div>
-
-            {/* Primary Super Admin Button: Lovepreet Singh */}
-            <button
-              onClick={() => handleGoogleOneClickLogin('singh.lovepreet88@gmail.com', 'Lovepreet Singh')}
-              className="w-full p-3.5 rounded-xl bg-white hover:bg-stone-50 text-black font-bold text-xs flex items-center justify-between transition-all shadow-xs group border border-stone-300"
-            >
-              <div className="flex items-center gap-3">
-                <GoogleIcon className="w-5 h-5" />
-                <div className="text-left">
-                  <div className="text-xs font-bold text-black leading-tight">
-                    Continue as Lovepreet Singh
-                  </div>
-                  <div className="text-[10px] text-stone-600 font-mono font-medium">
-                    singh.lovepreet88@gmail.com
-                  </div>
-                </div>
-              </div>
-
-              <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-black border border-amber-300">
-                Store Owner
-              </span>
-            </button>
-
-            {/* Secondary Boutique Operations Button */}
-            <button
-              onClick={() => handleGoogleOneClickLogin('eperfumestorenz@gmail.com', 'Store Operations')}
-              className="w-full p-3 rounded-xl bg-white hover:bg-stone-50 text-black font-bold text-xs flex items-center justify-between transition-all border border-stone-300"
-            >
-              <div className="flex items-center gap-3">
-                <GoogleIcon className="w-4 h-4" />
-                <div className="text-left">
-                  <div className="text-xs font-bold leading-tight text-black">
-                    Continue as Boutique Operations
-                  </div>
-                  <div className="text-[10px] text-stone-600 font-mono font-medium">
-                    eperfumestorenz@gmail.com
-                  </div>
-                </div>
-              </div>
-
-              <span className="text-[10px] text-stone-600 font-semibold">
-                Staff Admin
-              </span>
-            </button>
-
-            {/* Google Identity Services Container */}
-            <div className="pt-2 border-t border-stone-200 text-center">
-              <div id="gsiAdminButtonContainer" className="flex justify-center my-1 min-h-[44px]"></div>
-              <span className="text-[10px] text-stone-500 font-medium">
-                Google Identity Services (GIS) Web SDK Active
-              </span>
-            </div>
-
-            {/* Sign in with another Google Email */}
-            <form onSubmit={handleCustomGoogleLogin} className="pt-3 border-t border-stone-200 space-y-2">
-              <label className="block text-[11px] text-black font-semibold">
-                Or enter another authorized Google email:
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={customEmailInput}
-                  onChange={(e) => setCustomEmailInput(e.target.value)}
-                  placeholder="admin@gmail.com"
-                  className="flex-1 px-3 py-2 bg-white border border-stone-300 rounded-xl text-xs text-black placeholder-stone-400 focus:outline-hidden focus:border-amber-600 font-medium"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-xl text-xs transition-colors shrink-0 shadow-xs"
-                >
-                  Verify
-                </button>
-              </div>
-            </form>
-
-            {/* Store Owner Emergency Passcode Toggle */}
-            <div className="pt-2 border-t border-stone-200">
+          {/* Authentication Container */}
+          <div className="bg-stone-50 border border-stone-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-5">
+            {/* Auth Method Tabs */}
+            <div className="grid grid-cols-2 gap-1.5 p-1 bg-white border border-stone-200 rounded-xl text-xs font-semibold">
               <button
                 type="button"
-                onClick={() => setShowEmergencyPin(!showEmergencyPin)}
-                className="text-[11px] text-stone-600 hover:text-black flex items-center gap-1.5 mx-auto font-medium cursor-pointer"
+                onClick={() => {
+                  setAuthMethodTab('credentials');
+                  setAuthError(null);
+                }}
+                className={`py-2 px-3 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  authMethodTab === 'credentials'
+                    ? 'bg-amber-100 text-black border border-amber-300 shadow-xs'
+                    : 'text-stone-600 hover:text-black'
+                }`}
               >
-                <Key className="w-3 h-3 text-stone-600" />
-                <span>{showEmergencyPin ? 'Hide Emergency Passcode' : 'Store Owner Emergency Passcode'}</span>
+                <Key className="w-3.5 h-3.5 text-amber-700" />
+                <span>Admin Passcode</span>
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthMethodTab('google');
+                  setAuthError(null);
+                }}
+                className={`py-2 px-3 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  authMethodTab === 'google'
+                    ? 'bg-amber-100 text-black border border-amber-300 shadow-xs'
+                    : 'text-stone-600 hover:text-black'
+                }`}
+              >
+                <GoogleIcon className="w-3.5 h-3.5" />
+                <span>Google GIS</span>
+              </button>
+            </div>
 
-              {showEmergencyPin && (
-                <form onSubmit={handleEmergencyPinLogin} className="mt-3 space-y-2 p-3 rounded-xl bg-white border border-stone-300 animate-fadeIn">
-                  <span className="text-[10px] text-stone-700 font-medium block">
-                    Use owner passcode (<code className="text-amber-800 font-bold">8888</code>) if Google popups/cookies are blocked inside the preview iframe:
-                  </span>
-                  <div className="flex gap-2">
+            {/* TAB 1: Admin Credentials (Email + Master Passcode) */}
+            {authMethodTab === 'credentials' && (
+              <form onSubmit={handleCredentialsLogin} className="space-y-4 text-xs">
+                <div>
+                  <label className="block text-black font-bold mb-1">
+                    Administrator Email *
+                  </label>
+                  <div className="space-y-1.5">
                     <input
-                      type="password"
-                      value={emergencyPinInput}
-                      onChange={(e) => setEmergencyPinInput(e.target.value)}
-                      placeholder="Enter 4-digit passcode"
-                      className="flex-1 px-3 py-2 bg-white border border-stone-300 rounded-xl text-xs text-black font-mono text-center tracking-widest font-bold"
-                      maxLength={10}
+                      type="email"
+                      required
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      placeholder="singh.lovepreet88@gmail.com"
+                      className="w-full px-3.5 py-2.5 bg-white border border-stone-300 rounded-xl text-black font-medium focus:outline-hidden focus:border-amber-600 text-xs shadow-xs"
+                    />
+                    <div className="flex flex-wrap gap-1.5 pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setLoginEmail('singh.lovepreet88@gmail.com')}
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono border transition-colors cursor-pointer ${
+                          loginEmail === 'singh.lovepreet88@gmail.com'
+                            ? 'bg-amber-100 text-black border-amber-400 font-bold'
+                            : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
+                        }`}
+                      >
+                        Owner (singh.lovepreet88@gmail.com)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setLoginEmail('eperfumestorenz@gmail.com')}
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono border transition-colors cursor-pointer ${
+                          loginEmail === 'eperfumestorenz@gmail.com'
+                            ? 'bg-amber-100 text-black border-amber-400 font-bold'
+                            : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
+                        }`}
+                      >
+                        HQ (eperfumestorenz@gmail.com)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-black font-bold">
+                      Master Admin Passcode *
+                    </label>
+                    <span className="text-[10px] text-amber-800 font-medium">
+                      Default key: <strong>8888</strong>
+                    </span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={showLoginPassword ? 'text' : 'password'}
+                      required
+                      value={loginPasscode}
+                      onChange={(e) => setLoginPasscode(e.target.value)}
+                      placeholder="Enter 4-digit Master Passcode"
+                      className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-stone-300 rounded-xl text-black font-mono text-center tracking-widest text-sm font-bold focus:outline-hidden focus:border-amber-600 shadow-xs"
                     />
                     <button
-                      type="submit"
-                      className="px-3 py-2 bg-white hover:bg-stone-50 text-black font-bold border border-stone-300 rounded-xl text-xs cursor-pointer"
+                      type="button"
+                      onClick={() => setShowLoginPassword(!showLoginPassword)}
+                      className="absolute right-3 top-3 text-stone-400 hover:text-black cursor-pointer"
+                      title={showLoginPassword ? 'Hide passcode' : 'Show passcode'}
                     >
-                      Unlock
+                      {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
-                </form>
-              )}
-            </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <label className="flex items-center gap-2 cursor-pointer text-stone-700">
+                    <input
+                      type="checkbox"
+                      checked={rememberSession}
+                      onChange={(e) => setRememberSession(e.target.checked)}
+                      className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer"
+                    />
+                    <span className="text-[11px] font-medium">Keep active session for 4 hours</span>
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmittingAuth || !loginPasscode}
+                  className="w-full py-3 px-4 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-black font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors shadow-xs cursor-pointer"
+                >
+                  <Lock className="w-4 h-4 text-black" />
+                  <span>{isSubmittingAuth ? 'Verifying Credentials...' : 'Verify Passcode & Unlock Portal'}</span>
+                </button>
+              </form>
+            )}
+
+            {/* TAB 2: Google Identity Services / GIS Web SDK */}
+            {authMethodTab === 'google' && (
+              <div className="space-y-4 text-xs text-center">
+                <div className="space-y-1">
+                  <span className="font-bold text-black text-sm block">
+                    Google Identity Services
+                  </span>
+                  <p className="text-[11px] text-stone-600 font-medium">
+                    Sign in using your Google Account. Only emails verified against the admin whitelist will be admitted.
+                  </p>
+                </div>
+
+                {/* GIS SDK Render Button Container */}
+                <div className="pt-2 pb-1 flex justify-center">
+                  <div id="gsiAdminButtonContainer" className="flex justify-center min-h-[44px]"></div>
+                </div>
+
+                <div className="p-3 bg-white border border-stone-200 rounded-xl text-[11px] text-stone-600 text-left space-y-1">
+                  <div className="font-bold text-black flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Whitelisted Google Accounts:</span>
+                  </div>
+                  <ul className="list-disc list-inside text-[10px] space-y-0.5 font-mono text-stone-700">
+                    <li>singh.lovepreet88@gmail.com (Owner)</li>
+                    <li>eperfumestorenz@gmail.com (Store HQ)</li>
+                  </ul>
+                  <p className="text-[10px] text-stone-500 pt-1">
+                    Tip: If third-party Google iframe cookies are blocked in this browser, use the <strong>Admin Passcode</strong> tab with passcode <strong>8888</strong>.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Security Policy Footnote */}
           <div className="text-center text-[10px] text-stone-600 font-medium space-y-1">
             <div className="flex items-center justify-center gap-1.5">
               <Lock className="w-3 h-3 text-amber-700" />
-              <span>TLS 1.3 256-Bit Encrypted · Invercargill Boutiques NZ</span>
+              <span>TLS 1.3 256-Bit Encrypted · Invercargill Flagship NZ</span>
             </div>
             <div>
-              Protected by Google OAuth 2.0 and Role-Based Admin Whitelist.
+              Protected by Role-Based Access Control and Master Admin Passcode.
             </div>
           </div>
         </div>

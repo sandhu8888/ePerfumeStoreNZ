@@ -114,14 +114,103 @@ export function isAuthorizedAdmin(email: string): boolean {
   return authorized.includes(cleanEmail);
 }
 
+const PASSCODE_STORAGE_KEY = 'eperfume_admin_master_passcode';
+export const DEFAULT_MASTER_PASSCODE = '8888';
+
 /**
- * Get stored Google session
+ * Retrieve current Master Admin Passcode (defaults to 8888)
+ */
+export function getAdminMasterPasscode(): string {
+  try {
+    return localStorage.getItem(PASSCODE_STORAGE_KEY) || DEFAULT_MASTER_PASSCODE;
+  } catch {
+    return DEFAULT_MASTER_PASSCODE;
+  }
+}
+
+/**
+ * Update the Master Admin Passcode
+ */
+export function setAdminMasterPasscode(newPasscode: string): boolean {
+  const clean = newPasscode.trim();
+  if (!clean || clean.length < 4) return false;
+  try {
+    localStorage.setItem(PASSCODE_STORAGE_KEY, clean);
+    recordAuditLog('singh.lovepreet88@gmail.com', 'admin_action' as any, 'passcode_updated', 'success');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Verify admin credentials (Email + Master Passcode)
+ */
+export function verifyAdminCredentials(email: string, passcode: string): { success: boolean; error?: string } {
+  const cleanEmail = email.toLowerCase().trim();
+  const cleanPasscode = passcode.trim();
+
+  if (!cleanEmail || !cleanEmail.includes('@')) {
+    return { success: false, error: 'Please enter a valid administrator email address.' };
+  }
+
+  if (!isAuthorizedAdmin(cleanEmail)) {
+    recordAuditLog(cleanEmail, 'auth_failed', 'credentials', 'blocked');
+    return {
+      success: false,
+      error: `Access Denied: "${cleanEmail}" is not recognized in the authorized admin whitelist.`
+    };
+  }
+
+  const currentPasscode = getAdminMasterPasscode();
+  if (cleanPasscode !== currentPasscode) {
+    recordAuditLog(cleanEmail, 'auth_failed', 'credentials', 'blocked');
+    return {
+      success: false,
+      error: 'Invalid Master Admin Passcode. Please enter the correct authorization key.'
+    };
+  }
+
+  return { success: true };
+}
+
+/**
+ * Get stored Google session (strictly checks whitelist and expiration)
  */
 export function getStoredAdminSession(): GoogleAdminUser | null {
   try {
-    const raw = localStorage.getItem(SESSION_STORAGE_KEY);
+    // Invalidate deprecated mock sessions from localStorage
+    const legacyMock = localStorage.getItem(SESSION_STORAGE_KEY);
+    if (legacyMock) {
+      try {
+        const parsed = JSON.parse(legacyMock);
+        if (parsed.authMethod === 'google_verified_profile') {
+          localStorage.removeItem(SESSION_STORAGE_KEY);
+        }
+      } catch {
+        localStorage.removeItem(SESSION_STORAGE_KEY);
+      }
+    }
+
+    // Check sessionStorage first (secure session), then localStorage if remembered
+    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY) || localStorage.getItem(SESSION_STORAGE_KEY);
     if (raw) {
       const parsed: GoogleAdminUser = JSON.parse(raw);
+      // Deprecate mock profile
+      if (parsed.authMethod === 'google_verified_profile') {
+        clearAdminSession();
+        return null;
+      }
+
+      // Check session age (maximum 4 hours)
+      if (parsed.authenticatedAt) {
+        const ageMs = Date.now() - new Date(parsed.authenticatedAt).getTime();
+        if (ageMs > 4 * 60 * 60 * 1000) {
+          clearAdminSession();
+          return null;
+        }
+      }
+
       // Double check if still in whitelist
       if (parsed && parsed.email && isAuthorizedAdmin(parsed.email)) {
         return parsed;
@@ -136,9 +225,14 @@ export function getStoredAdminSession(): GoogleAdminUser | null {
 /**
  * Save Google Admin session
  */
-export function saveAdminSession(user: GoogleAdminUser): void {
+export function saveAdminSession(user: GoogleAdminUser, remember = false): void {
   try {
-    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(user));
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(user));
+    if (remember) {
+      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+    }
     recordAuditLog(user.email, 'login', user.authMethod, 'success');
   } catch {
     // Storage issue
@@ -154,6 +248,7 @@ export function clearAdminSession(): void {
     if (current) {
       recordAuditLog(current.email, 'logout', current.authMethod, 'success');
     }
+    sessionStorage.removeItem(SESSION_STORAGE_KEY);
     localStorage.removeItem(SESSION_STORAGE_KEY);
   } catch {
     // Storage issue
