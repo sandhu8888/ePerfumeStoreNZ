@@ -32,27 +32,27 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200/80 transition-all">
-      {/* Slim Promotional Announcement Banner */}
+      {/* Slim Promotional Announcement Banner (White background, black font) */}
       {!bannerDismissed && (
-        <div className="bg-gradient-to-r from-amber-950 via-amber-900 to-amber-950 text-amber-100 text-xs py-2 px-4 flex items-center justify-between font-sans border-b border-amber-800/60 shadow-xs">
+        <div className="bg-white text-black text-xs py-2 px-4 flex items-center justify-between font-sans border-b border-stone-200 shadow-xs">
           <div className="mx-auto flex items-center gap-3 text-center">
-            <span className="text-amber-300 font-semibold tracking-wide">Authentic Naseem UAE Scents</span>
-            <span className="hidden sm:inline text-amber-500/60">·</span>
-            <span className="hidden sm:inline">Free NZ Express Shipping Over $75</span>
-            <span className="hidden md:inline text-amber-500/60">·</span>
-            <span className="hidden md:inline">Invercargill Store: Shop 3/24 Leven Street</span>
+            <span className="text-black font-semibold tracking-wide">Authentic Naseem UAE Scents</span>
+            <span className="hidden sm:inline text-stone-300">·</span>
+            <span className="hidden sm:inline text-black">Free NZ Express Shipping Over $75</span>
+            <span className="hidden md:inline text-stone-300">·</span>
+            <span className="hidden md:inline text-black">Invercargill Store: Shop 3/24 Leven Street</span>
             <a
               href="https://wa.me/6421958113"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-amber-300 hover:text-white underline font-semibold ml-1"
+              className="inline-flex items-center gap-1 text-black hover:text-amber-800 underline font-semibold ml-1"
             >
-              <Phone className="w-3 h-3" /> 021 958 113
+              <Phone className="w-3 h-3 text-amber-700" /> 021 958 113
             </a>
           </div>
           <button
             onClick={() => setBannerDismissed(true)}
-            className="text-amber-300/80 hover:text-white p-0.5 ml-2 cursor-pointer transition-colors"
+            className="text-stone-500 hover:text-black p-0.5 ml-2 cursor-pointer transition-colors"
             aria-label="Dismiss banner"
           >
             <X className="w-3.5 h-3.5" />
@@ -67,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-4 shrink-0">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-stone-700 hover:text-amber-900 focus:outline-hidden cursor-pointer"
+              className="md:hidden p-2 text-black hover:text-amber-900 focus:outline-hidden cursor-pointer"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -76,13 +76,13 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Zone 2: 4 Clean Single-Line Text Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-stone-600">
+          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-black">
             <button
               onClick={() => handleNavClick('home')}
               className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 cursor-pointer ${
                 activeTab === 'home'
-                  ? 'border-amber-600 text-stone-800 font-semibold'
-                  : 'border-transparent hover:text-amber-900 hover:border-amber-300'
+                  ? 'border-black text-black font-bold'
+                  : 'border-transparent text-black hover:text-amber-800 hover:border-amber-400'
               }`}
             >
               Home
@@ -91,8 +91,8 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => handleNavClick('products')}
               className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 cursor-pointer ${
                 activeTab === 'products'
-                  ? 'border-amber-600 text-stone-800 font-semibold'
-                  : 'border-transparent hover:text-amber-900 hover:border-amber-300'
+                  ? 'border-black text-black font-bold'
+                  : 'border-transparent text-black hover:text-amber-800 hover:border-amber-400'
               }`}
             >
               Products
@@ -101,8 +101,8 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => handleNavClick('about')}
               className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 cursor-pointer ${
                 activeTab === 'about'
-                  ? 'border-amber-600 text-stone-800 font-semibold'
-                  : 'border-transparent hover:text-amber-900 hover:border-amber-300'
+                  ? 'border-black text-black font-bold'
+                  : 'border-transparent text-black hover:text-amber-800 hover:border-amber-400'
               }`}
             >
               About Us
@@ -111,8 +111,8 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => handleNavClick('contact')}
               className={`transition-colors whitespace-nowrap shrink-0 py-1 border-b-2 cursor-pointer ${
                 activeTab === 'contact'
-                  ? 'border-amber-600 text-stone-800 font-semibold'
-                  : 'border-transparent hover:text-amber-900 hover:border-amber-300'
+                  ? 'border-black text-black font-bold'
+                  : 'border-transparent text-black hover:text-amber-800 hover:border-amber-400'
               }`}
             >
               Contact Us
@@ -124,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Quick Search trigger */}
             <button
               onClick={onSearchClick}
-              className="p-2 text-stone-600 hover:text-amber-900 rounded-lg hover:bg-amber-50 transition-colors cursor-pointer"
+              className="p-2 text-black hover:text-amber-900 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
               aria-label="Search perfumes"
               title="Search scents"
             >
@@ -134,22 +134,22 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Admin Portal Direct Header Button */}
             <button
               onClick={onOpenAdmin}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-amber-950 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-lg transition-colors whitespace-nowrap shrink-0 shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-black hover:bg-stone-50 bg-white border border-stone-300 rounded-lg transition-colors whitespace-nowrap shrink-0 shadow-xs cursor-pointer"
               title="Open Admin Portal (Google Authenticated · Products, Orders, Gallery & Hero Banner)"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
               <span>Admin Portal</span>
             </button>
 
-            {/* Primary Action: Shopping Cart Button (Warm Arabian Bronze) */}
+            {/* Primary Action: Shopping Cart Button */}
             <button
               onClick={onOpenCart}
-              className="relative flex items-center justify-center p-2.5 bg-amber-800 hover:bg-amber-750 text-white rounded-lg transition-colors shadow-xs cursor-pointer"
+              className="relative flex items-center justify-center p-2.5 bg-white hover:bg-stone-50 text-black border border-stone-300 rounded-lg transition-colors shadow-xs cursor-pointer"
               aria-label={`Shopping Cart with ${cartCount} items`}
             >
-              <ShoppingBag className="w-5 h-5 text-amber-200" />
+              <ShoppingBag className="w-5 h-5 text-black" />
               {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center bg-amber-400 text-amber-950 text-[11px] font-bold rounded-full border-2 border-white shadow-xs font-mono">
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center bg-amber-500 text-black text-[11px] font-bold rounded-full border-2 border-white shadow-xs font-mono">
                   {cartCount}
                 </span>
               )}

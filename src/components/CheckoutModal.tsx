@@ -79,15 +79,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-stone-950/70 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
-      <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
+      <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden my-8 text-black">
         {/* Header */}
-        <div className="p-6 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+        <div className="p-6 border-b border-stone-200 flex items-center justify-between bg-white">
           <div>
-            <h2 className="text-xl font-serif font-bold text-stone-900">
+            <h2 className="text-xl font-serif font-bold text-black">
               {confirmedOrder ? 'Order Confirmed' : 'New Zealand Checkout'}
             </h2>
-            <p className="text-xs text-stone-500 mt-0.5">
+            <p className="text-xs text-stone-600 mt-0.5">
               {confirmedOrder
                 ? 'Thank you for choosing ePerfume Store Invercargill'
                 : 'Fast NZ-Wide Delivery from Shop 3/24 Leven Street, Invercargill'}
@@ -239,14 +239,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 onClick={handlePrint}
-                className="flex-1 py-3 px-4 border border-stone-300 hover:bg-stone-50 text-stone-700 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors"
+                className="flex-1 py-3 px-4 border border-stone-300 hover:bg-stone-50 text-black font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <Printer className="w-4 h-4" />
                 <span>Print Official Tax Invoice / Receipt</span>
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 py-3 px-4 bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors"
+                className="flex-1 py-3 px-4 bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
               >
                 <span>Continue Shopping</span>
               </button>
@@ -465,13 +465,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 px-6 bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm disabled:opacity-50"
+                className="w-full py-3.5 px-6 bg-amber-600 hover:bg-amber-500 text-black font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
               >
                 {isSubmitting ? (
                   <span>Securing Order...</span>
                 ) : (
                   <>
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <ShieldCheck className="w-4 h-4 text-black" />
                     <span>
                       {paymentMethod === 'bank_transfer'
                         ? `Place Order & View Bank Transfer Details · $${finalTotal.toFixed(2)} NZD`
@@ -481,7 +481,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </>
                 )}
               </button>
-              <div className="text-center text-[11px] text-stone-500">
+              <div className="text-center text-[11px] text-stone-600">
                 Dispatched from Shop 3/24 Leven Street, Invercargill · 100% Guaranteed Authentic Naseem UAE Scents
               </div>
             </div>

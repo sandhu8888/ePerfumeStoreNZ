@@ -33,21 +33,21 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="absolute inset-0 bg-stone-950/60 backdrop-blur-xs transition-opacity"
+        className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col border-l border-stone-200">
+        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col border-l border-stone-200 text-black">
           {/* Header */}
-          <div className="p-6 border-b border-stone-200 flex items-center justify-between">
+          <div className="p-6 border-b border-stone-200 flex items-center justify-between bg-white">
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-5 h-5 text-amber-700" />
-              <h2 className="text-lg font-serif font-bold text-stone-900">Your Shopping Bag</h2>
-              <span className="text-xs font-mono text-stone-500">({items.length} items)</span>
+              <h2 className="text-lg font-serif font-bold text-black">Your Shopping Bag</h2>
+              <span className="text-xs font-mono text-stone-600 font-bold">({items.length} items)</span>
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 text-stone-400 hover:text-stone-900 rounded-lg hover:bg-stone-100 transition-colors"
+              className="p-1.5 text-stone-500 hover:text-black rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
               aria-label="Close cart drawer"
             >
               <X className="w-5 h-5" />
@@ -85,14 +85,14 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   <ShoppingBag className="w-8 h-8 text-stone-400" />
                 </div>
                 <div className="space-y-1">
-                  <p className="font-serif text-lg font-medium text-stone-800">Your bag is empty</p>
-                  <p className="text-xs text-stone-500 max-w-xs">
+                  <p className="font-serif text-lg font-bold text-black">Your bag is empty</p>
+                  <p className="text-xs text-stone-600 max-w-xs">
                     Explore our luxury authentic Naseem UAE perfumes, concentrated oils, and home air fresheners.
                   </p>
                 </div>
                 <button
                   onClick={onClose}
-                  className="mt-4 px-6 py-2.5 bg-stone-900 text-amber-300 text-xs font-semibold rounded-lg hover:bg-stone-800 transition-colors"
+                  className="mt-4 px-6 py-2.5 bg-amber-600 hover:bg-amber-500 text-black text-xs font-bold rounded-lg transition-colors cursor-pointer"
                 >
                   Discover Fragrances
                 </button>
@@ -101,7 +101,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               items.map((item) => (
                 <div
                   key={item.product.id}
-                  className="flex gap-4 p-3 rounded-xl border border-stone-200/80 hover:border-stone-300 transition-colors bg-white"
+                  className="flex gap-4 p-3 rounded-xl border border-stone-200 hover:border-stone-300 transition-colors bg-white text-black"
                 >
                   {/* Thumbnail */}
                   <div className="w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-stone-200">
@@ -112,18 +112,18 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   <div className="flex-1 flex flex-col justify-between">
                     <div>
                       <div className="flex items-start justify-between gap-2">
-                        <h4 className="text-sm font-serif font-semibold text-stone-900 line-clamp-1">
+                        <h4 className="text-sm font-serif font-bold text-black line-clamp-1">
                           {item.product.name}
                         </h4>
                         <button
                           onClick={() => onRemoveItem(item.product.id)}
-                          className="text-stone-400 hover:text-rose-600 p-1"
+                          className="text-stone-400 hover:text-rose-600 p-1 cursor-pointer"
                           title="Remove item"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
-                      <div className="text-[11px] text-stone-500">
+                      <div className="text-[11px] text-stone-600">
                         {item.product.volume} · {item.product.type}
                       </div>
                     </div>
@@ -132,26 +132,26 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       <div className="flex items-center border border-stone-300 rounded-md">
                         <button
                           onClick={() => onUpdateQuantity(item.product.id, -1)}
-                          className="px-2 py-0.5 text-xs text-stone-600 hover:bg-stone-100"
+                          className="px-2 py-0.5 text-xs text-black hover:bg-stone-100 font-bold"
                         >
                           -
                         </button>
-                        <span className="px-2.5 py-0.5 font-mono text-xs font-semibold text-stone-900">
+                        <span className="px-2.5 py-0.5 font-mono text-xs font-bold text-black">
                           {item.quantity}
                         </span>
                         <button
                           onClick={() => onUpdateQuantity(item.product.id, 1)}
-                          className="px-2 py-0.5 text-xs text-stone-600 hover:bg-stone-100"
+                          className="px-2 py-0.5 text-xs text-black hover:bg-stone-100 font-bold"
                         >
                           +
                         </button>
                       </div>
 
                       <div className="text-right">
-                        <div className="font-mono text-sm font-bold text-stone-900 tabular-nums">
+                        <div className="font-mono text-sm font-bold text-black tabular-nums">
                           ${(item.product.price * item.quantity).toFixed(2)}
                         </div>
-                        <div className="text-[10px] text-stone-400 uppercase">NZD</div>
+                        <div className="text-[10px] text-stone-500 uppercase font-bold">NZD</div>
                       </div>
                     </div>
                   </div>
@@ -164,27 +164,27 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           {items.length > 0 && (
             <div className="p-6 border-t border-stone-200 bg-stone-50 space-y-4">
               <div className="space-y-1.5 text-xs">
-                <div className="flex justify-between text-stone-600">
+                <div className="flex justify-between text-stone-700">
                   <span>Subtotal</span>
-                  <span className="font-mono font-medium text-stone-900 tabular-nums">
+                  <span className="font-mono font-bold text-black tabular-nums">
                     ${subtotal.toFixed(2)} NZD
                   </span>
                 </div>
-                <div className="flex justify-between text-stone-600">
+                <div className="flex justify-between text-stone-700">
                   <span>Estimated NZ Delivery</span>
-                  <span className="font-mono font-medium text-stone-900">
+                  <span className="font-mono font-bold text-black">
                     {subtotal >= freeThreshold ? (
-                      <span className="text-emerald-700 font-semibold">FREE Express</span>
+                      <span className="text-emerald-700 font-bold">FREE Express</span>
                     ) : (
                       `$${STORE_INFO.shippingPolicy.flatRate.toFixed(2)} NZD`
                     )}
                   </span>
                 </div>
-                <div className="flex justify-between text-stone-500 text-[11px]">
+                <div className="flex justify-between text-stone-600 text-[11px]">
                   <span>GST (15% Included)</span>
-                  <span className="font-mono">${((subtotal * 3) / 23).toFixed(2)} NZD</span>
+                  <span className="font-mono font-semibold">${((subtotal * 3) / 23).toFixed(2)} NZD</span>
                 </div>
-                <div className="pt-2 border-t border-stone-200 flex justify-between text-base font-serif font-bold text-stone-900">
+                <div className="pt-2 border-t border-stone-200 flex justify-between text-base font-serif font-bold text-black">
                   <span>Estimated Total</span>
                   <span className="font-mono tabular-nums">
                     ${(subtotal + (subtotal >= freeThreshold ? 0 : STORE_INFO.shippingPolicy.flatRate)).toFixed(2)} NZD
@@ -197,13 +197,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   onClose();
                   onCheckout();
                 }}
-                className="w-full py-3.5 px-4 bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm"
+                className="w-full py-3.5 px-4 bg-amber-600 hover:bg-amber-500 text-black font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-colors shadow-xs cursor-pointer"
               >
                 <span>Proceed to Secure Checkout</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
-              <div className="text-center text-[11px] text-stone-500">
+              <div className="text-center text-[11px] text-stone-600">
                 Direct Bank Transfer & Secure Cards Accepted · Invercargill Store Dispatch
               </div>
             </div>

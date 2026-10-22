@@ -163,7 +163,7 @@ export const PerfumeIllustration: React.FC<PerfumeIllustrationProps> = ({
 
       {/* Alcohol-Free Assurance Tag at bottom left */}
       {product.alcoholFree && (
-        <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-stone-900/80 backdrop-blur-xs text-[10px] text-amber-200 font-sans tracking-wide">
+        <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-white/95 border border-stone-300 backdrop-blur-xs text-[10px] text-black font-bold font-sans tracking-wide shadow-xs">
           100% Alcohol-Free
         </div>
       )}

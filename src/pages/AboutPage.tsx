@@ -42,13 +42,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           <div className="pt-4 flex flex-wrap gap-4">
             <button
               onClick={() => onNavigate('products', 'all')}
-              className="px-6 py-3 bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold text-xs rounded-xl transition-colors shadow-xs"
+              className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs rounded-xl transition-colors shadow-xs"
             >
               Explore Naseem Collection
             </button>
             <button
               onClick={() => onNavigate('contact')}
-              className="px-6 py-3 bg-white border border-stone-300 hover:bg-stone-50 text-stone-800 font-semibold text-xs rounded-xl transition-colors"
+              className="px-6 py-3 bg-white border border-stone-300 hover:bg-stone-50 text-black font-bold text-xs rounded-xl transition-colors"
             >
               Contact &amp; Store Location
             </button>
@@ -61,8 +61,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
               <Droplet className="w-5 h-5" />
             </div>
-            <h3 className="font-serif font-bold text-base text-stone-900">100% Alcohol-Free</h3>
-            <p className="text-xs text-stone-500 leading-relaxed">
+            <h3 className="font-serif font-bold text-base text-black">100% Alcohol-Free</h3>
+            <p className="text-xs text-stone-700 leading-relaxed font-medium">
               Gentle on delicate skin, completely non-sticky, halal-certified, and ideal for daily wear and prayer rituals.
             </p>
           </div>
@@ -71,8 +71,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
               <Clock className="w-5 h-5" />
             </div>
-            <h3 className="font-serif font-bold text-base text-stone-900">24-Hour Persistence</h3>
-            <p className="text-xs text-stone-500 leading-relaxed">
+            <h3 className="font-serif font-bold text-base text-black">24-Hour Persistence</h3>
+            <p className="text-xs text-stone-700 leading-relaxed font-medium">
               Pure concentrated perfume oils (Attars) that bond gracefully to your skin oils, developing richer olfactory notes over hours.
             </p>
           </div>
@@ -81,8 +81,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
               <ShieldCheck className="w-5 h-5" />
             </div>
-            <h3 className="font-serif font-bold text-base text-stone-900">Authentic UAE Import</h3>
-            <p className="text-xs text-stone-500 leading-relaxed">
+            <h3 className="font-serif font-bold text-base text-black">Authentic UAE Import</h3>
+            <p className="text-xs text-stone-700 leading-relaxed font-medium">
               Directly imported from Naseem Perfume UAE. Guaranteed 100% original flacons with official serial seals.
             </p>
           </div>
@@ -91,8 +91,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
               <Truck className="w-5 h-5" />
             </div>
-            <h3 className="font-serif font-bold text-base text-stone-900">NZ-Wide Express Courier</h3>
-            <p className="text-xs text-stone-500 leading-relaxed">
+            <h3 className="font-serif font-bold text-base text-black">NZ-Wide Express Courier</h3>
+            <p className="text-xs text-stone-700 leading-relaxed font-medium">
               Same-day packing in Invercargill. Free tracked courier service across New Zealand for orders over $75 NZD.
             </p>
           </div>
@@ -100,18 +100,18 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
       </div>
 
       {/* 3. Physical Invercargill Store Banner */}
-      <div className="p-8 sm:p-10 rounded-3xl bg-stone-900 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="p-8 sm:p-10 rounded-3xl bg-white text-black border border-stone-300 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="space-y-2">
-          <div className="text-xs uppercase tracking-widest text-amber-400 font-semibold">
+          <div className="text-xs uppercase tracking-widest text-amber-800 font-bold">
             Invercargill Flagship
           </div>
-          <h2 className="text-2xl font-serif font-bold text-white">
+          <h2 className="text-2xl font-serif font-bold text-black">
             Experience Scent Consultations in Person
           </h2>
-          <p className="text-xs text-stone-400 max-w-xl leading-relaxed">
+          <p className="text-xs text-stone-700 max-w-xl leading-relaxed font-medium">
             Visit Shop 3/24 Leven Street, Invercargill 9810. Sample our concentrates, room sprays, and masculine oud blends with our local fragrance experts.
           </p>
-          <div className="pt-2 text-xs text-stone-300 flex flex-wrap gap-4">
+          <div className="pt-2 text-xs text-black font-semibold flex flex-wrap gap-4">
             <span>Shop 3/24 Leven Street, Invercargill</span>
             <span>·</span>
             <span>021 958 113</span>
@@ -122,7 +122,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
         <button
           onClick={() => onNavigate('contact')}
-          className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-xs rounded-xl whitespace-nowrap transition-colors"
+          className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs rounded-xl whitespace-nowrap transition-colors shadow-xs"
         >
           View Map &amp; Store Hours
         </button>

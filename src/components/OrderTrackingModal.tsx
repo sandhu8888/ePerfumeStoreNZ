@@ -57,26 +57,26 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
   const currentStep = selectedOrder ? getStepProgress(selectedOrder.orderStatus) : 0;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-stone-950/70 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
-      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
+      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden my-8 text-black">
         {/* Header */}
-        <div className="p-6 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+        <div className="p-6 border-b border-stone-200 flex items-center justify-between bg-white">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 flex items-center justify-center font-bold">
               <Truck className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-lg font-serif font-bold text-stone-900">
+              <h2 className="text-lg font-serif font-bold text-black">
                 New Zealand Real-Time Order Tracking
               </h2>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-stone-600">
                 NZ Post Tracked Express Courier from Invercargill Boutique
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-stone-400 hover:text-stone-900 rounded-lg hover:bg-stone-200/60"
+            className="p-1.5 text-stone-500 hover:text-black rounded-lg hover:bg-stone-100 cursor-pointer"
             aria-label="Close tracking"
           >
             <X className="w-5 h-5" />
@@ -93,12 +93,12 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Enter Order # (e.g. NZ-10491) or Phone..."
-                className="w-full pl-9 pr-3 py-2 text-xs border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 font-mono"
+                className="w-full pl-9 pr-3 py-2 text-xs border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 font-mono text-black"
               />
             </div>
             <button
               type="submit"
-              className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap"
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black text-xs font-bold rounded-lg transition-colors whitespace-nowrap cursor-pointer shadow-xs"
             >
               Track Order
             </button>

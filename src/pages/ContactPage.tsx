@@ -89,16 +89,16 @@ export const ContactPage: React.FC = () => {
         </div>
 
         {/* Storefront Physical */}
-        <div className="p-6 rounded-2xl bg-stone-100 border border-stone-300 shadow-xs flex flex-col justify-between">
+        <div className="p-6 rounded-2xl bg-white border border-stone-200 shadow-xs flex flex-col justify-between">
           <div className="space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-stone-900 text-amber-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center">
               <MapPin className="w-5 h-5" />
             </div>
-            <h3 className="font-serif font-bold text-lg text-stone-900">Invercargill Boutique</h3>
-            <p className="text-xs text-stone-600 leading-relaxed">
+            <h3 className="font-serif font-bold text-lg text-black">Invercargill Boutique</h3>
+            <p className="text-xs text-stone-700 leading-relaxed font-medium">
               Shop 3/24 Leven Street, Invercargill 9810, Southland, New Zealand
             </p>
-            <div className="text-[11px] text-stone-500">
+            <div className="text-[11px] text-stone-600 font-medium">
               Mon–Sat: 9:30 AM – 5:30 PM · Sun: 10:30 AM – 3:30 PM
             </div>
           </div>
@@ -106,7 +106,7 @@ export const ContactPage: React.FC = () => {
             href="https://maps.google.com/?q=Shop+3/24+Leven+Street+Invercargill+9810"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 py-2.5 px-4 bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-semibold rounded-lg text-center transition-colors block"
+            className="mt-4 py-2.5 px-4 bg-white hover:bg-stone-50 text-black border border-stone-300 text-xs font-bold rounded-lg text-center transition-colors block"
           >
             Open in Google Maps →
           </a>
@@ -177,7 +177,7 @@ export const ContactPage: React.FC = () => {
               </p>
               <button
                 onClick={() => setSubmitted(false)}
-                className="mt-2 px-4 py-2 bg-stone-900 text-amber-300 rounded-lg text-xs font-semibold"
+                className="mt-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg text-xs"
               >
                 Send Another Message
               </button>
@@ -185,47 +185,47 @@ export const ContactPage: React.FC = () => {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block text-stone-700 font-medium mb-1">Your Full Name *</label>
+                <label className="block text-black font-semibold mb-1">Your Full Name *</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Liam Walker"
-                  className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 text-stone-900"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 text-black"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-stone-700 font-medium mb-1">Email Address *</label>
+                  <label className="block text-black font-semibold mb-1">Email Address *</label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="your-email@example.co.nz"
-                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 text-stone-900"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 text-black"
                   />
                 </div>
                 <div>
-                  <label className="block text-stone-700 font-medium mb-1">Phone / WhatsApp</label>
+                  <label className="block text-black font-semibold mb-1">Phone / WhatsApp</label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="e.g. 021 958 113"
-                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 text-stone-900 font-mono"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 text-black font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-stone-700 font-medium mb-1">Inquiry Topic</label>
+                <label className="block text-black font-semibold mb-1">Inquiry Topic</label>
                 <select
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 text-stone-900 bg-white"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 text-black bg-white"
                 >
                   <option value="Naseem Perfume UAE Inquiry">Naseem Perfume UAE Inquiry</option>
                   <option value="Perfume Oil / Attar Recommendation">Perfume Oil / Attar Recommendation</option>
@@ -236,20 +236,20 @@ export const ContactPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-stone-700 font-medium mb-1">Your Message *</label>
+                <label className="block text-black font-semibold mb-1">Your Message *</label>
                 <textarea
                   required
                   rows={4}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   placeholder="How can we assist you with our luxury fragrances today?"
-                  className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 text-stone-900"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-hidden focus:border-amber-600 text-black"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm"
+                className="w-full py-3 px-4 bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors shadow-xs"
               >
                 <Send className="w-4 h-4" />
                 <span>Submit to eperfumestorenz@gmail.com</span>
@@ -260,13 +260,13 @@ export const ContactPage: React.FC = () => {
       </div>
 
       {/* 4. Active Social Media Community Preview (Facebook, TikTok, Instagram, YouTube) */}
-      <div className="p-8 rounded-3xl bg-stone-100 border border-stone-200 space-y-6">
+      <div className="p-8 rounded-3xl bg-white border border-stone-200 shadow-xs space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="text-xs uppercase tracking-widest text-amber-800 font-semibold">
+            <div className="text-xs uppercase tracking-widest text-amber-800 font-bold">
               Community Updates
             </div>
-            <h2 className="text-2xl font-serif font-bold text-stone-900">
+            <h2 className="text-2xl font-serif font-bold text-black">
               Follow Us on Facebook &amp; Social Platforms
             </h2>
           </div>
@@ -289,14 +289,14 @@ export const ContactPage: React.FC = () => {
                 f
               </div>
               <div>
-                <div className="font-semibold text-xs text-stone-900">ePerfume Store New Zealand</div>
-                <div className="text-[10px] text-stone-400">2 days ago · Invercargill</div>
+                <div className="font-bold text-xs text-black">ePerfume Store New Zealand</div>
+                <div className="text-[10px] text-stone-500">2 days ago · Invercargill</div>
               </div>
             </div>
-            <p className="text-xs text-stone-700 leading-relaxed">
+            <p className="text-xs text-stone-800 leading-relaxed font-medium">
               ✨ Fresh shipment just landed directly from Sharjah, UAE! We have restocked our signature <strong>Naseem Bushra Concentrated Perfume Oil</strong> and <strong>Taariikh Gold</strong>. Visit us in Invercargill at Shop 3/24 Leven St or order online with free NZ shipping over $75.
             </p>
-            <div className="text-[11px] text-blue-700 font-medium">
+            <div className="text-[11px] text-blue-700 font-semibold">
               #NaseemPerfume #UAEPerfume #Invercargill #AlcoholFreeScents
             </div>
           </div>
@@ -307,32 +307,32 @@ export const ContactPage: React.FC = () => {
                 IG
               </div>
               <div>
-                <div className="font-semibold text-xs text-stone-900">@eperfumestore</div>
-                <div className="text-[10px] text-stone-400">4 days ago · Visual Story</div>
+                <div className="font-bold text-xs text-black">@eperfumestore</div>
+                <div className="text-[10px] text-stone-500">4 days ago · Visual Story</div>
               </div>
             </div>
-            <p className="text-xs text-stone-700 leading-relaxed">
+            <p className="text-xs text-stone-800 leading-relaxed font-medium">
               Did you know our <strong>Home Air Fresheners</strong> are 100% aerosol-free? Powered by pure UAE fragrance oils, a single spray over living room curtains creates an authentic Dubai atmosphere for hours!
             </p>
-            <div className="text-[11px] text-pink-700 font-medium">
+            <div className="text-[11px] text-pink-700 font-semibold">
               #HomeFragrance #OudAirFreshener #LuxuryLivingNZ
             </div>
           </div>
 
           <div className="p-5 rounded-xl bg-white border border-stone-200 shadow-xs space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-stone-900 text-white flex items-center justify-center font-bold text-xs">
+              <div className="w-8 h-8 rounded-full bg-stone-200 text-black flex items-center justify-center font-bold text-xs">
                 TT
               </div>
               <div>
-                <div className="font-semibold text-xs text-stone-900">@eperfumestorenz</div>
-                <div className="text-[10px] text-stone-400">1 week ago · TikTok Video</div>
+                <div className="font-bold text-xs text-black">@eperfumestorenz</div>
+                <div className="text-[10px] text-stone-500">1 week ago · TikTok Video</div>
               </div>
             </div>
-            <p className="text-xs text-stone-700 leading-relaxed">
+            <p className="text-xs text-stone-800 leading-relaxed font-medium">
               Watch our in-depth video guide on how to apply concentrated perfume oils using traditional crystal wand techniques for 24+ hour skin projection!
             </p>
-            <div className="text-[11px] text-stone-800 font-medium">
+            <div className="text-[11px] text-black font-semibold">
               #PerfumeOilTutorial #AttarNZ #ScentLayering
             </div>
           </div>

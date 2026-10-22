@@ -308,11 +308,11 @@ export default function App() {
   const cartTotalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-stone-900 selection:bg-stone-200">
+    <div className="min-h-screen flex flex-col bg-white text-black selection:bg-amber-100 selection:text-black">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-stone-900 text-white text-xs px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 border border-stone-800 animate-fadeIn">
-          <Check className="w-4 h-4 text-emerald-400" />
+        <div className="fixed bottom-6 right-6 z-50 bg-white text-black text-xs font-semibold px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 border border-stone-300 animate-fadeIn">
+          <Check className="w-4 h-4 text-emerald-600 font-bold" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -358,11 +358,11 @@ export default function App() {
       <aside aria-label="Store administration shortcut" className="fixed bottom-5 left-5 z-40">
         <button
           onClick={() => setIsAdminOpen(true)}
-          className="flex items-center gap-2 px-3.5 py-2 bg-stone-900/95 hover:bg-stone-950 text-amber-300 text-xs font-semibold rounded-full shadow-xl border border-amber-500/40 backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer group"
+          className="flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-stone-50 text-black text-xs font-bold rounded-full shadow-xl border-2 border-stone-300 backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer group"
           title="Open Admin Portal (Alt+A)"
         >
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
           <span>Admin Portal</span>
         </button>
       </aside>
@@ -376,7 +376,7 @@ export default function App() {
 
       {/* Quick Search Modal */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-50 bg-stone-950/70 backdrop-blur-xs flex items-start justify-center p-4 pt-20 animate-fadeIn">
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-start justify-center p-4 pt-20 animate-fadeIn">
           <div className="bg-white rounded-2xl max-w-xl w-full p-4 shadow-2xl border border-stone-200">
             <div className="flex items-center gap-2 pb-3 border-b border-stone-200">
               <Search className="w-5 h-5 text-stone-400" />
@@ -386,14 +386,14 @@ export default function App() {
                 placeholder="Search UAE scents by name, notes (e.g. oud, amber, rose)..."
                 value={quickSearchTerm}
                 onChange={(e) => setQuickSearchTerm(e.target.value)}
-                className="w-full text-sm outline-hidden text-stone-900"
+                className="w-full text-sm outline-hidden text-black font-medium"
               />
               <button
                 onClick={() => {
                   setIsSearchOpen(false);
                   setQuickSearchTerm('');
                 }}
-                className="p-1 text-stone-400 hover:text-stone-900"
+                className="p-1 text-stone-400 hover:text-black cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -418,16 +418,16 @@ export default function App() {
                       className="p-2.5 rounded-lg hover:bg-stone-50 cursor-pointer flex items-center justify-between transition-colors text-xs"
                     >
                       <div>
-                        <div className="font-serif font-semibold text-stone-900">{p.name}</div>
-                        <div className="text-[11px] text-stone-500">
+                        <div className="font-serif font-bold text-black">{p.name}</div>
+                        <div className="text-[11px] text-stone-600 font-medium">
                           {p.type} · {p.notes.top.slice(0, 2).join(', ')}
                         </div>
                       </div>
-                      <div className="font-mono font-bold text-stone-900">${p.price.toFixed(2)} NZD</div>
+                      <div className="font-mono font-bold text-black">${p.price.toFixed(2)} NZD</div>
                     </div>
                   ))
               ) : (
-                <div className="p-4 text-center text-xs text-stone-400">
+                <div className="p-4 text-center text-xs text-stone-500 font-medium">
                   Type a scent note like <em>rose</em>, <em>oud</em>, <em>vanilla</em>, or <em>bushra</em>...
                 </div>
               )}

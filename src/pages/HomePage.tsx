@@ -57,21 +57,21 @@ export const HomePage: React.FC<HomePageProps> = ({
   const isLightText = heroConfig.textColorScheme === 'light';
 
   return (
-    <div className="space-y-16 sm:space-y-24 bg-white text-stone-850">
+    <div className="space-y-16 sm:space-y-24 bg-white text-black">
       {/* 0. OPTIONAL LUXURY ANNOUNCEMENT TICKER (From Admin Hero Config) */}
       {heroConfig.showAnnouncement && heroConfig.announcementText && (
-        <div className="bg-gradient-to-r from-amber-950 via-amber-900 to-amber-950 text-amber-100 py-2.5 px-4 text-center border-b border-amber-800/60 shadow-xs">
-          <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-xs font-medium tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+        <div className="bg-white text-black py-2.5 px-4 text-center border-b border-stone-200 shadow-xs">
+          <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-xs font-semibold tracking-wider text-black">
+            <Sparkles className="w-3.5 h-3.5 text-amber-700 shrink-0" />
             <span>{heroConfig.announcementText}</span>
-            <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0 hidden sm:inline" />
+            <Sparkles className="w-3.5 h-3.5 text-amber-700 shrink-0 hidden sm:inline" />
           </div>
         </div>
       )}
 
-      {/* 1. NASEEM LUXURY HERO SECTION (Fully Customizable from Admin Portal) */}
+      {/* 1. NASEEM LUXURY HERO SECTION (White background aesthetic with black fonts) */}
       {heroConfig.enabled && (
-        <section className="relative overflow-hidden min-h-[580px] lg:min-h-[660px] flex items-center border-b border-amber-900/20">
+        <section className="relative overflow-hidden min-h-[580px] lg:min-h-[660px] flex items-center border-b border-stone-200">
           {/* Background Image */}
           <img
             src={heroConfig.backgroundImage}
@@ -79,10 +79,9 @@ export const HomePage: React.FC<HomePageProps> = ({
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
 
-          {/* Dynamic Darkness Overlay (Set in Admin Portal) */}
+          {/* Clean White Translucent Backdrop Overlay */}
           <div
-            className="absolute inset-0 bg-[#24150E] transition-opacity"
-            style={{ opacity: heroConfig.overlayDarkness / 100 }}
+            className="absolute inset-0 bg-white/75 backdrop-blur-[1px] transition-opacity"
           />
 
           {/* Content Container */}
@@ -100,43 +99,41 @@ export const HomePage: React.FC<HomePageProps> = ({
                     : 'text-left'
                 }`}
               >
-                {/* Eyebrow / Provenance Badge (Can be updated or removed in Admin) */}
+                {/* Eyebrow / Provenance Badge */}
                 {heroConfig.badgeText && (
                   <div className={`flex items-center gap-2 text-xs font-sans tracking-wide ${
                     heroConfig.alignment === 'center' ? 'justify-center' : heroConfig.alignment === 'right' ? 'justify-end' : ''
                   }`}>
-                    <span className="px-3 py-1 rounded-full font-semibold uppercase tracking-widest text-[11px] bg-amber-500/20 text-amber-300 border border-amber-400/30 backdrop-blur-xs">
+                    <span className="px-3 py-1 rounded-full font-bold uppercase tracking-widest text-[11px] bg-amber-100 text-amber-950 border border-amber-300">
                       {heroConfig.badgeText}
                     </span>
                   </div>
                 )}
 
-                {/* Main Headline Title (Can be updated or removed in Admin) */}
+                {/* Main Headline Title */}
                 {heroConfig.title && (
-                  <h1 className={`text-3xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight leading-[1.12] text-balance ${
-                    isLightText ? 'text-white' : 'text-stone-950'
-                  }`}>
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight leading-[1.12] text-balance text-black">
                     {heroConfig.title}
                   </h1>
                 )}
 
-                {/* Subtitle / Tagline (Can be updated or removed in Admin) */}
+                {/* Subtitle / Tagline */}
                 {heroConfig.subtitle && (
-                  <div className="text-base sm:text-xl font-serif italic text-amber-300 tracking-wide">
+                  <div className="text-base sm:text-xl font-serif italic text-amber-900 font-semibold tracking-wide">
                     {heroConfig.subtitle}
                   </div>
                 )}
 
-                {/* Description Body (Can be updated or removed in Admin) */}
+                {/* Description Body */}
                 {heroConfig.description && (
-                  <p className={`text-sm sm:text-base leading-relaxed max-w-2xl ${
+                  <p className={`text-sm sm:text-base leading-relaxed max-w-2xl text-black font-medium ${
                     heroConfig.alignment === 'center' ? 'mx-auto' : ''
-                  } ${isLightText ? 'text-stone-200' : 'text-stone-800'}`}>
+                  }`}>
                     {heroConfig.description}
                   </p>
                 )}
 
-                {/* Action Buttons (Can be updated, changed, or removed in Admin) */}
+                {/* Action Buttons */}
                 {(heroConfig.showPrimaryCta || heroConfig.showSecondaryCta) && (
                   <div className={`flex flex-wrap items-center gap-4 pt-2 ${
                     heroConfig.alignment === 'center'
@@ -148,7 +145,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     {heroConfig.showPrimaryCta && heroConfig.primaryCtaText && (
                       <button
                         onClick={() => onNavigate(heroConfig.primaryCtaLink, 'all')}
-                        className="px-7 py-3.5 bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold text-sm rounded-xl flex items-center gap-2 shadow-lg transition-all hover:scale-102"
+                        className="px-7 py-3.5 bg-amber-600 hover:bg-amber-500 text-black font-bold text-sm rounded-xl flex items-center gap-2 shadow-xs transition-all hover:scale-102 cursor-pointer"
                       >
                         <span>{heroConfig.primaryCtaText}</span>
                         <ArrowRight className="w-4 h-4" />
@@ -158,43 +155,37 @@ export const HomePage: React.FC<HomePageProps> = ({
                     {heroConfig.showSecondaryCta && heroConfig.secondaryCtaText && (
                       <button
                         onClick={() => onNavigate(heroConfig.secondaryCtaLink)}
-                        className={`px-6 py-3.5 font-semibold text-sm rounded-xl flex items-center gap-2 transition-all ${
-                          isLightText
-                            ? 'bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-xs'
-                            : 'bg-stone-900 hover:bg-stone-800 text-white shadow-md'
-                        }`}
+                        className="px-6 py-3.5 font-semibold text-sm rounded-xl flex items-center gap-2 transition-all bg-white hover:bg-stone-50 text-black border border-stone-300 shadow-xs cursor-pointer"
                       >
-                        <MapPin className="w-4 h-4 text-amber-400" />
+                        <MapPin className="w-4 h-4 text-amber-700" />
                         <span>{heroConfig.secondaryCtaText}</span>
                       </button>
                     )}
                   </div>
                 )}
 
-                {/* Editorial Trust Markers (Can be updated or removed in Admin) */}
+                {/* Editorial Trust Markers */}
                 {heroConfig.showTrustBadges && (
-                  <div className={`pt-6 border-t ${
-                    isLightText ? 'border-white/20 text-stone-200' : 'border-stone-300 text-stone-700'
-                  } grid grid-cols-3 gap-4 text-xs ${
+                  <div className={`pt-6 border-t border-stone-300 text-black grid grid-cols-3 gap-4 text-xs ${
                     heroConfig.alignment === 'center' ? 'max-w-lg mx-auto' : 'max-w-lg'
                   }`}>
                     <div>
-                      <strong className={`block font-serif text-lg font-bold ${isLightText ? 'text-amber-400' : 'text-stone-900'}`}>
+                      <strong className="block font-serif text-lg font-bold text-black">
                         {heroConfig.trustBadge1Title}
                       </strong>
-                      <span className="opacity-90">{heroConfig.trustBadge1Sub}</span>
+                      <span className="text-stone-700 font-medium">{heroConfig.trustBadge1Sub}</span>
                     </div>
                     <div>
-                      <strong className={`block font-serif text-lg font-bold ${isLightText ? 'text-amber-400' : 'text-stone-900'}`}>
+                      <strong className="block font-serif text-lg font-bold text-black">
                         {heroConfig.trustBadge2Title}
                       </strong>
-                      <span className="opacity-90">{heroConfig.trustBadge2Sub}</span>
+                      <span className="text-stone-700 font-medium">{heroConfig.trustBadge2Sub}</span>
                     </div>
                     <div>
-                      <strong className={`block font-serif text-lg font-bold ${isLightText ? 'text-amber-400' : 'text-stone-900'}`}>
+                      <strong className="block font-serif text-lg font-bold text-black">
                         {heroConfig.trustBadge3Title}
                       </strong>
-                      <span className="opacity-90">{heroConfig.trustBadge3Sub}</span>
+                      <span className="text-stone-700 font-medium">{heroConfig.trustBadge3Sub}</span>
                     </div>
                   </div>
                 )}
@@ -444,55 +435,55 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="mt-10 text-center">
           <button
             onClick={() => onNavigate('products', activeCategory)}
-            className="px-6 py-3 bg-amber-800 hover:bg-amber-700 text-white text-xs font-semibold rounded-xl inline-flex items-center gap-2 transition-colors shadow-xs"
+            className="px-6 py-3 bg-white hover:bg-stone-50 text-black border border-stone-300 text-xs font-semibold rounded-xl inline-flex items-center gap-2 transition-colors shadow-xs cursor-pointer"
           >
             <span>View All {filteredFeatured.length} Products in Catalog</span>
-            <ArrowRight className="w-4 h-4 text-amber-300" />
+            <ArrowRight className="w-4 h-4 text-amber-700" />
           </button>
         </div>
       </section>
 
       {/* 4. THE NASEEM UAE DISTINCTION (Craftsmanship & Value) */}
-      <section className="bg-gradient-to-br from-[#2D1B13] via-[#382218] to-[#2D1B13] border border-[#4E2F20] text-white py-16 px-4 sm:px-6 lg:px-8 rounded-3xl max-w-7xl mx-auto shadow-xl">
+      <section className="bg-white border border-stone-200 text-black py-16 px-4 sm:px-6 lg:px-8 rounded-3xl max-w-7xl mx-auto shadow-sm">
         <div className="max-w-3xl mx-auto text-center space-y-4 mb-12">
-          <span className="text-xs uppercase tracking-widest text-amber-400 font-semibold">
+          <span className="text-xs uppercase tracking-widest text-amber-800 font-bold">
             The Science &amp; Art of Naseem Dubai
           </span>
-          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white">
+          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-black">
             Why Discerning Fragrance Lovers Choose Alcohol-Free Scents
           </h2>
-          <p className="text-sm text-amber-200/80 leading-relaxed">
+          <p className="text-sm text-stone-700 leading-relaxed font-normal">
             Conventional Western perfumes use up to 80% denatured ethanol alcohol, which evaporates quickly and dries the skin. Naseem perfumery uses pure oils and innovative aqua-base technology.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="p-6 rounded-2xl bg-[#3E271B]/90 border border-amber-700/40 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+          <div className="p-6 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center font-bold">
               01
             </div>
-            <h3 className="text-lg font-serif font-bold text-white">Intense 24-Hour Longevity</h3>
-            <p className="text-xs text-amber-100/80 leading-relaxed">
+            <h3 className="text-lg font-serif font-bold text-black">Intense 24-Hour Longevity</h3>
+            <p className="text-xs text-stone-700 leading-relaxed font-normal">
               Without volatile alcohol flashing off into thin air, the concentrated oils bind directly to pulse points and fabric fibers, unfolding true olfactory notes over 16 to 24+ hours.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-[#3E271B]/90 border border-amber-700/40 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+          <div className="p-6 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center font-bold">
               02
             </div>
-            <h3 className="text-lg font-serif font-bold text-white">Hypoallergenic &amp; Gentle</h3>
-            <p className="text-xs text-amber-100/80 leading-relaxed">
+            <h3 className="text-lg font-serif font-bold text-black">Hypoallergenic &amp; Gentle</h3>
+            <p className="text-xs text-stone-700 leading-relaxed font-normal">
               Safe for sensitive skin, hair, and prayer rituals. Zero burning sensation, zero chemical alcohol sting, and 100% compliant with global IFRA cosmetics guidelines.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-[#3E271B]/90 border border-amber-700/40 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+          <div className="p-6 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center font-bold">
               03
             </div>
-            <h3 className="text-lg font-serif font-bold text-white">Direct Import Savings</h3>
-            <p className="text-xs text-amber-100/80 leading-relaxed">
+            <h3 className="text-lg font-serif font-bold text-black">Direct Import Savings</h3>
+            <p className="text-xs text-stone-700 leading-relaxed font-normal">
               We import directly from the UAE production facilities to our Invercargill boutique, eliminating middleman markups so you enjoy genuine luxury at everyday fair prices.
             </p>
           </div>
@@ -501,53 +492,52 @@ export const HomePage: React.FC<HomePageProps> = ({
 
       {/* 4B. SIGNATURE EDITORIAL SPOTLIGHT: THE AQUA PERFUME REVOLUTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#2D1B13] via-[#352016] to-[#2D1B13] border border-[#4E2F20] text-white shadow-xl">
+        <div className="relative rounded-3xl overflow-hidden bg-white border border-stone-200 text-black shadow-md">
           <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
             <div className="p-8 sm:p-12 lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-semibold tracking-widest uppercase">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold tracking-widest uppercase">
+                <Sparkles className="w-3.5 h-3.5 text-amber-700" />
                 <span>Naseem Innovation Spotlight</span>
               </div>
-              <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white leading-tight">
+              <h2 className="text-2xl sm:text-4xl font-serif font-bold text-black leading-tight">
                 The World&apos;s First Water-Based Fine Fragrance
               </h2>
-              <p className="text-sm sm:text-base text-amber-100/90 leading-relaxed">
+              <p className="text-sm sm:text-base text-stone-700 leading-relaxed font-normal">
                 Naseem Dubai disrupted the global fragrance industry by creating patented alcohol-free Aqua Perfumes. Unlike alcohol-heavy sprays that evaporate in minutes, our micro-emulsified formulas lock natural notes into the skin for velvety, long-lasting sillage.
               </p>
               <div className="grid grid-cols-2 gap-4 text-xs">
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <div className="font-bold text-amber-400 font-serif text-base">0% Alcohol</div>
-                  <div className="text-amber-200/80 text-[11px] mt-0.5">Gentle on delicate skin and hair</div>
+                <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
+                  <div className="font-bold text-amber-800 font-serif text-base">0% Alcohol</div>
+                  <div className="text-stone-700 text-[11px] mt-0.5">Gentle on delicate skin and hair</div>
                 </div>
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <div className="font-bold text-amber-400 font-serif text-base">IFRA Certified</div>
-                  <div className="text-amber-200/80 text-[11px] mt-0.5">Global Swiss cosmetics safety standards</div>
+                <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
+                  <div className="font-bold text-amber-800 font-serif text-base">IFRA Certified</div>
+                  <div className="text-stone-700 text-[11px] mt-0.5">Global Swiss cosmetics safety standards</div>
                 </div>
               </div>
               <div className="pt-2 flex flex-wrap gap-4">
                 <button
                   onClick={() => onNavigate('products', 'for-women')}
-                  className="px-6 py-3.5 bg-amber-700 hover:bg-amber-600 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shadow-md"
+                  className="px-6 py-3.5 bg-amber-600 hover:bg-amber-500 text-black font-bold text-xs rounded-xl flex items-center gap-2 transition-colors shadow-xs cursor-pointer"
                 >
                   <span>Explore Aqua Perfume Range</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => onNavigate('products', 'perfume-oil')}
-                  className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs rounded-xl border border-white/20 transition-colors"
+                  className="px-6 py-3.5 bg-white hover:bg-stone-50 text-black font-semibold text-xs rounded-xl border border-stone-300 transition-colors cursor-pointer"
                 >
                   <span>Explore Attar Oils</span>
                 </button>
               </div>
             </div>
 
-            <div className="lg:col-span-5 h-72 lg:h-full relative overflow-hidden bg-[#24160E]">
+            <div className="lg:col-span-5 h-72 lg:h-full relative overflow-hidden bg-stone-100">
               <img
                 src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1200&q=80"
                 alt="Naseem Aqua Perfumes"
-                className="w-full h-full object-cover opacity-85 hover:scale-105 transition-transform duration-700"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-[#2D1B13] via-[#2D1B13]/50 to-transparent" />
             </div>
           </div>
         </div>
@@ -691,22 +681,22 @@ export const HomePage: React.FC<HomePageProps> = ({
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute top-3 left-3 px-2.5 py-1 rounded bg-stone-900/80 backdrop-blur-xs text-[11px] font-mono text-amber-300">
+                <div className="absolute top-3 left-3 px-2.5 py-1 rounded bg-white/95 border border-stone-200 backdrop-blur-xs text-[11px] font-mono text-black font-semibold shadow-xs">
                   {item.tag}
                 </div>
               </div>
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-amber-800 transition-colors">
+                  <h3 className="font-serif font-bold text-lg text-black group-hover:text-amber-800 transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-stone-600 mt-1 leading-relaxed">
+                  <p className="text-xs text-stone-700 mt-1 leading-relaxed">
                     {item.subtitle}
                   </p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-amber-900 font-semibold">
+                <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-black font-bold">
                   <span className="capitalize">{item.category.replace('-', ' ')}</span>
-                  <span className="text-stone-400 group-hover:text-amber-800 transition-colors">View Details →</span>
+                  <span className="text-stone-500 group-hover:text-amber-800 transition-colors">View Details →</span>
                 </div>
               </div>
             </div>
@@ -718,18 +708,18 @@ export const HomePage: React.FC<HomePageProps> = ({
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl bg-stone-50 border border-stone-200 p-8 sm:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-8 space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-stone-200 text-stone-900 text-xs font-semibold">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-stone-200 text-black text-xs font-bold">
               <MapPin className="w-3.5 h-3.5 text-amber-700" />
               <span>Invercargill Physical Boutique</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900">
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-black">
               Visit Us at Shop 3/24 Leven Street, Invercargill
             </h2>
-            <p className="text-sm text-stone-700 leading-relaxed max-w-2xl">
+            <p className="text-sm text-stone-700 leading-relaxed max-w-2xl font-normal">
               Step inside our physical boutique in Southland to experience olfactory consultations, sample authentic Naseem concentrates on testing strips, and take home pure Arabian luxury.
             </p>
-            <div className="flex flex-wrap items-center gap-3 pt-2 text-xs text-stone-700">
-              <span className="font-semibold text-stone-900">Store Hours:</span>
+            <div className="flex flex-wrap items-center gap-3 pt-2 text-xs text-stone-800">
+              <span className="font-bold text-black">Store Hours:</span>
               <span>Mon–Fri 9:30 AM – 5:30 PM</span>
               <span className="text-stone-300">·</span>
               <span>Sat 10:00 AM – 5:00 PM</span>
@@ -739,10 +729,10 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="pt-2 flex flex-wrap gap-3">
               <button
                 onClick={() => onNavigate('contact')}
-                className="px-5 py-2.5 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-2"
+                className="px-5 py-2.5 bg-white hover:bg-stone-50 text-black border border-stone-300 text-xs font-semibold rounded-lg transition-colors flex items-center gap-2 cursor-pointer shadow-xs"
               >
                 <span>View Store Map &amp; Directions</span>
-                <ChevronRight className="w-4 h-4 text-amber-400" />
+                <ChevronRight className="w-4 h-4 text-amber-700" />
               </button>
               <a
                 href={STORE_INFO.whatsappUrl}
@@ -792,11 +782,11 @@ export const HomePage: React.FC<HomePageProps> = ({
             rel="noopener noreferrer"
             className="p-5 rounded-2xl bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all text-center group flex flex-col items-center justify-center"
           >
-            <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center group-hover:bg-stone-900 group-hover:text-white transition-colors mb-2">
-              <span className="font-bold text-xs">TT</span>
+            <div className="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center group-hover:bg-amber-100 group-hover:text-black transition-colors mb-2">
+              <span className="font-bold text-xs text-black">TT</span>
             </div>
-            <div className="font-semibold text-xs text-stone-900">TikTok Marketing</div>
-            <div className="text-[11px] text-stone-500 mt-0.5">@eperfumestorenz</div>
+            <div className="font-bold text-xs text-black">TikTok Marketing</div>
+            <div className="text-[11px] text-stone-600 mt-0.5 font-medium">@eperfumestorenz</div>
           </a>
 
           <a

@@ -392,28 +392,28 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto bg-stone-950/80 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 animate-fadeIn"
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/40 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 animate-fadeIn"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div className="relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden my-4 flex flex-col h-[90vh]">
         {/* Admin Navigation Bar */}
-        <div className="p-4 sm:px-6 bg-stone-900 text-white flex flex-wrap items-center justify-between gap-4 border-b border-stone-800">
+        <div className="p-4 sm:px-6 bg-white text-black flex flex-wrap items-center justify-between gap-4 border-b border-stone-200">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-amber-600 text-stone-950 flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-lg bg-amber-600 text-black flex items-center justify-center font-bold">
               eP
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-serif font-bold text-base tracking-wide">
+                <span className="font-serif font-bold text-base tracking-wide text-black">
                   ePerfume Store Administration
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-amber-100 text-black border border-amber-300 font-semibold">
                   Shopify / WooCommerce Mode
                 </span>
               </div>
-              <span className="text-xs text-stone-400">
+              <span className="text-xs text-stone-600 font-medium">
                 Invercargill Boutique Hub · Authentic UAE Naseem Inventory
               </span>
             </div>
@@ -427,8 +427,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   onClick={() => setActiveTab('auth')}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${
                     activeTab === 'auth'
-                      ? 'bg-amber-500/20 text-amber-200 border-amber-400/50 shadow-xs'
-                      : 'bg-stone-800 text-stone-200 border-stone-700 hover:border-amber-500/40 hover:bg-stone-800/80'
+                      ? 'bg-amber-100 text-black border-amber-400 font-semibold shadow-xs'
+                      : 'bg-stone-50 text-black border-stone-300 hover:border-amber-400 hover:bg-stone-100'
                   }`}
                   title="Google Account & Security Settings"
                 >
@@ -439,16 +439,16 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                       className="w-5 h-5 rounded-full object-cover ring-1 ring-amber-400"
                     />
                   ) : (
-                    <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 text-stone-950 flex items-center justify-center font-bold text-[10px]">
+                    <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 text-black flex items-center justify-center font-bold text-[10px]">
                       {adminUser.name ? adminUser.name.charAt(0) : 'G'}
                     </div>
                   )}
                   <div className="text-left hidden sm:block">
-                    <div className="text-stone-200 font-medium leading-none flex items-center gap-1.5">
+                    <div className="text-black font-semibold leading-none flex items-center gap-1.5">
                       <span>{adminUser.email}</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" title="Google Verified Session Active"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="Google Verified Session Active"></span>
                     </div>
-                    <div className="text-[10px] text-amber-400/90 mt-0.5 flex items-center gap-1">
+                    <div className="text-[10px] text-amber-800 mt-0.5 flex items-center gap-1 font-semibold">
                       <ShieldCheck className="w-2.5 h-2.5" />
                       <span>{adminUser.role}</span>
                     </div>
@@ -456,7 +456,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 </button>
                 <button
                   onClick={handleSignOut}
-                  className="p-1.5 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800 transition-colors"
+                  className="p-1.5 text-stone-500 hover:text-black rounded-lg hover:bg-stone-100 transition-colors"
                   title="Sign out of Admin Session"
                 >
                   <LogOut className="w-4 h-4" />
@@ -464,8 +464,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-amber-500/10 text-amber-300 border border-amber-500/30 flex items-center gap-1.5">
-                  <Lock className="w-3 h-3 text-amber-400" />
+                <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-black border border-amber-300 flex items-center gap-1.5">
+                  <Lock className="w-3 h-3 text-amber-800" />
                   <span>Google Auth Required</span>
                 </span>
               </div>
@@ -473,7 +473,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
             <button
               onClick={onClose}
-              className="p-2 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800 transition-colors"
+              className="p-2 text-stone-500 hover:text-black rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
               aria-label="Close admin portal"
             >
               <X className="w-5 h-5" />
@@ -602,9 +602,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     setEditingProduct(null);
                     setIsCreatingProduct(true);
                   }}
-                  className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                  className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors shadow-xs"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4 text-black" />
                   <span>Add New Fragrance</span>
                 </button>
               </div>
@@ -646,21 +646,21 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                                   <PerfumeIllustration product={p} size="sm" />
                                 </div>
                                 <div>
-                                  <div className="font-semibold text-stone-900 font-serif">{p.name}</div>
-                                  <div className="text-[11px] text-stone-500">
+                                  <div className="font-bold text-black font-serif">{p.name}</div>
+                                  <div className="text-[11px] text-stone-600 font-medium">
                                     {p.arabicName} · {p.volume}
                                   </div>
                                 </div>
                               </div>
                             </td>
                             <td className="py-3 px-3">
-                              <span className="capitalize text-stone-700 font-medium block">
+                              <span className="capitalize text-black font-semibold block">
                                 {p.category.replace('-', ' ')}
                               </span>
-                              <span className="text-[10px] text-stone-400">{p.type}</span>
+                              <span className="text-[10px] text-stone-500 font-medium">{p.type}</span>
                             </td>
-                            <td className="py-3 px-3 font-mono text-stone-600">{p.sku}</td>
-                            <td className="py-3 px-3 text-right font-mono font-semibold text-stone-900 tabular-nums">
+                            <td className="py-3 px-3 font-mono text-black font-medium">{p.sku}</td>
+                            <td className="py-3 px-3 text-right font-mono font-bold text-black tabular-nums">
                               ${p.price.toFixed(2)}
                               {p.compareAtPrice && (
                                 <span className="block text-[10px] text-stone-400 line-through">
@@ -683,7 +683,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                             </td>
                             <td className="py-3 px-3">
                               {p.sticker ? (
-                                <span className="px-2 py-0.5 rounded text-[10px] bg-stone-900 text-amber-300 font-medium uppercase tracking-wider">
+                                <span className="px-2 py-0.5 rounded text-[10px] bg-white border border-stone-300 text-black font-bold uppercase tracking-wider shadow-xs">
                                   {p.sticker}
                                 </span>
                               ) : (
@@ -812,7 +812,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                           setSelectedInvoiceOrder(ord);
                           setActiveTab('invoices');
                         }}
-                        className="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-amber-300 rounded-lg transition-colors font-medium"
+                        className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg transition-colors cursor-pointer shadow-xs"
                       >
                         View Tax Invoice
                       </button>
@@ -828,18 +828,18 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-serif font-bold text-stone-900">
+                  <h3 className="text-base font-serif font-bold text-black">
                     Official New Zealand GST Tax Invoice
                   </h3>
-                  <p className="text-xs text-stone-500">
+                  <p className="text-xs text-stone-600 font-medium">
                     Formatted for print & customer accounting under New Zealand IRD standards
                   </p>
                 </div>
                 <button
                   onClick={handlePrintInvoice}
-                  className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
+                  className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black text-xs font-bold rounded-lg flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
                 >
-                  <Printer className="w-4 h-4" />
+                  <Printer className="w-4 h-4 text-black" />
                   <span>Print / Save Tax Invoice</span>
                 </button>
               </div>
@@ -1031,23 +1031,23 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     setNewGalleryTag('Boutique Showcase');
                     setNewGalleryCategory('all');
                   }}
-                  className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+                  className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors shadow-xs cursor-pointer"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4 text-black" />
                   <span>Upload New Gallery Image</span>
                 </button>
               </div>
 
               {/* Add New Gallery Item Card / Form */}
               {isAddingGalleryItem && (
-                <div className="p-5 bg-white rounded-xl border border-stone-300 shadow-sm space-y-4 animate-fadeIn">
+                <div className="p-5 bg-white rounded-xl border border-stone-300 shadow-xs space-y-4 animate-fadeIn">
                   <div className="flex items-center justify-between pb-2 border-b border-stone-200">
-                    <span className="font-serif font-bold text-stone-900 text-sm">
+                    <span className="font-serif font-bold text-black text-sm">
                       Upload New Image to Store Gallery
                     </span>
                     <button
                       onClick={() => setIsAddingGalleryItem(false)}
-                      className="p-1 text-stone-400 hover:text-stone-900"
+                      className="p-1 text-stone-400 hover:text-black cursor-pointer"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -1056,7 +1056,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Left: File Picker & Preview */}
                     <div className="space-y-3">
-                      <label className="block text-stone-700 font-medium">Select Image File from Device *</label>
+                      <label className="block text-black font-semibold">Select Image File from Device *</label>
                       <div className="border-2 border-dashed border-stone-300 rounded-xl p-4 text-center hover:border-amber-500 transition-colors bg-stone-50">
                         {galleryUploadPreview ? (
                           <div className="space-y-2">
@@ -1065,7 +1065,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                               alt="Upload Preview"
                               className="h-40 w-full object-cover rounded-lg border border-stone-200"
                             />
-                            <label className="inline-block px-3 py-1 bg-stone-900 text-white rounded text-xs cursor-pointer hover:bg-stone-800">
+                            <label className="inline-block px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded text-xs cursor-pointer shadow-xs">
                               Choose Different File
                               <input
                                 type="file"
@@ -1181,7 +1181,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                         onUpdateGallery([...gallery, newItem]);
                         setIsAddingGalleryItem(false);
                       }}
-                      className="px-5 py-2 bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold rounded-lg disabled:opacity-50"
+                      className="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg disabled:opacity-50 cursor-pointer shadow-xs"
                     >
                       Save to Gallery
                     </button>
@@ -1200,13 +1200,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                           alt={item.title}
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-stone-900/80 text-[10px] text-amber-300 font-mono">
+                        <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-white/95 border border-stone-300 text-[10px] text-black font-bold font-mono shadow-xs">
                           {item.tag}
                         </div>
                         {/* Hover Overlay with Upload Trigger */}
-                        <label className="absolute inset-0 bg-stone-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white cursor-pointer gap-1">
-                          <Upload className="w-5 h-5 text-amber-300" />
-                          <span className="text-[11px] font-semibold">Upload Replacement Photo</span>
+                        <label className="absolute inset-0 bg-white/85 backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-black cursor-pointer gap-1">
+                          <Upload className="w-5 h-5 text-black" />
+                          <span className="text-[11px] font-bold">Upload Replacement Photo</span>
                           <input
                             type="file"
                             accept="image/*"
@@ -1314,16 +1314,16 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                       setHeroSavedNotice(true);
                       setTimeout(() => setHeroSavedNotice(false), 3000);
                     }}
-                    className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors"
+                    className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
                   >
                     {heroSavedNotice ? (
                       <>
-                        <Check className="w-4 h-4 text-emerald-400" />
+                        <Check className="w-4 h-4 text-emerald-800" />
                         <span>Saved to Storefront!</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4 text-amber-400" />
+                        <Sparkles className="w-4 h-4 text-black" />
                         <span>Publish Changes</span>
                       </>
                     )}
@@ -1333,12 +1333,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
               {/* LIVE HERO BANNER PREVIEW CONTAINER */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-semibold text-stone-700">
+                <div className="flex items-center justify-between text-xs font-bold text-black">
                   <span className="flex items-center gap-1.5">
                     <Eye className="w-4 h-4 text-amber-700" />
                     <span>Live Interactive Preview</span>
                   </span>
-                  <span className="text-[11px] font-normal text-stone-500">
+                  <span className="text-[11px] font-medium text-stone-600">
                     Preview reflects current draft in real time
                   </span>
                 </div>
@@ -1350,15 +1350,15 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     alt="Hero Preview"
                     className="absolute inset-0 w-full h-full object-cover object-center"
                   />
-                  {/* Dynamic Darkness Overlay */}
+                  {/* Dynamic Lightness Overlay */}
                   <div
-                    className="absolute inset-0 bg-stone-950 transition-opacity"
-                    style={{ opacity: heroDraft.overlayDarkness / 100 }}
+                    className="absolute inset-0 bg-white transition-opacity"
+                    style={{ opacity: (100 - heroDraft.overlayDarkness) / 100 }}
                   />
 
                   {/* Top Announcement Bar in Preview */}
                   {heroDraft.showAnnouncement && heroDraft.announcementText && (
-                    <div className="absolute top-0 inset-x-0 bg-stone-900/90 backdrop-blur-xs text-amber-300 text-[10px] sm:text-xs py-1.5 px-4 text-center tracking-wider font-medium border-b border-white/10 z-10">
+                    <div className="absolute top-0 inset-x-0 bg-white text-black text-[10px] sm:text-xs py-1.5 px-4 text-center tracking-wider font-bold border-b border-stone-200 z-10 shadow-xs">
                       {heroDraft.announcementText}
                     </div>
                   )}
@@ -1371,11 +1371,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                         : heroDraft.alignment === 'right'
                         ? 'ml-auto text-right'
                         : 'text-left'
-                    } ${heroDraft.textColorScheme === 'dark' ? 'text-stone-900' : 'text-white'}`}
+                    } text-black`}
                   >
                     {/* Eyebrow / Provenance Badge */}
                     {heroDraft.badgeText && (
-                      <div className="inline-flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-widest font-semibold text-amber-400 mb-2 bg-stone-900/60 px-2.5 py-1 rounded backdrop-blur-xs">
+                      <div className="inline-flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-widest font-bold text-black mb-2 bg-white/95 border border-stone-300 px-2.5 py-1 rounded shadow-xs">
                         <span>{heroDraft.badgeText}</span>
                       </div>
                     )}
@@ -1560,13 +1560,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     </div>
 
                     <div>
-                      <label className="block font-medium text-stone-700 mb-1">Text Alignment</label>
+                      <label className="block font-medium text-black mb-1">Text Alignment</label>
                       <div className="grid grid-cols-3 gap-1">
                         <button
                           type="button"
                           onClick={() => setHeroDraft({ ...heroDraft, alignment: 'left' })}
-                          className={`p-2 rounded-lg border flex items-center justify-center ${
-                            heroDraft.alignment === 'left' ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 border-stone-200 text-stone-700'
+                          className={`p-2 rounded-lg border flex items-center justify-center cursor-pointer ${
+                            heroDraft.alignment === 'left' ? 'bg-amber-100 text-black border-amber-500 font-bold' : 'bg-white border-stone-300 text-black hover:bg-stone-50'
                           }`}
                           title="Left Align"
                         >
@@ -1575,8 +1575,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                         <button
                           type="button"
                           onClick={() => setHeroDraft({ ...heroDraft, alignment: 'center' })}
-                          className={`p-2 rounded-lg border flex items-center justify-center ${
-                            heroDraft.alignment === 'center' ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 border-stone-200 text-stone-700'
+                          className={`p-2 rounded-lg border flex items-center justify-center cursor-pointer ${
+                            heroDraft.alignment === 'center' ? 'bg-amber-100 text-black border-amber-500 font-bold' : 'bg-white border-stone-300 text-black hover:bg-stone-50'
                           }`}
                           title="Center Align"
                         >
@@ -1585,8 +1585,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                         <button
                           type="button"
                           onClick={() => setHeroDraft({ ...heroDraft, alignment: 'right' })}
-                          className={`p-2 rounded-lg border flex items-center justify-center ${
-                            heroDraft.alignment === 'right' ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 border-stone-200 text-stone-700'
+                          className={`p-2 rounded-lg border flex items-center justify-center cursor-pointer ${
+                            heroDraft.alignment === 'right' ? 'bg-amber-100 text-black border-amber-500 font-bold' : 'bg-white border-stone-300 text-black hover:bg-stone-50'
                           }`}
                           title="Right Align"
                         >
@@ -1599,13 +1599,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   {/* Text Color Scheme & Featured Card */}
                   <div className="grid grid-cols-2 gap-3 pt-2 border-t border-stone-100">
                     <div>
-                      <label className="block font-medium text-stone-700 mb-1">Text Color Contrast</label>
+                      <label className="block font-medium text-black mb-1">Text Color Contrast</label>
                       <div className="grid grid-cols-2 gap-1">
                         <button
                           type="button"
                           onClick={() => setHeroDraft({ ...heroDraft, textColorScheme: 'light' })}
-                          className={`py-1.5 px-2 rounded-lg border text-center font-medium ${
-                            heroDraft.textColorScheme === 'light' ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 border-stone-200 text-stone-700'
+                          className={`py-1.5 px-2 rounded-lg border text-center font-bold cursor-pointer ${
+                            heroDraft.textColorScheme === 'light' ? 'bg-amber-100 text-black border-amber-500' : 'bg-white border-stone-300 text-black hover:bg-stone-50'
                           }`}
                         >
                           Light Text
@@ -1613,8 +1613,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                         <button
                           type="button"
                           onClick={() => setHeroDraft({ ...heroDraft, textColorScheme: 'dark' })}
-                          className={`py-1.5 px-2 rounded-lg border text-center font-medium ${
-                            heroDraft.textColorScheme === 'dark' ? 'bg-stone-900 text-white border-stone-900' : 'bg-stone-50 border-stone-200 text-stone-700'
+                          className={`py-1.5 px-2 rounded-lg border text-center font-bold cursor-pointer ${
+                            heroDraft.textColorScheme === 'dark' ? 'bg-amber-100 text-black border-amber-500' : 'bg-white border-stone-300 text-black hover:bg-stone-50'
                           }`}
                         >
                           Dark Text
@@ -1919,9 +1919,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                         setHeroSavedNotice(true);
                         setTimeout(() => setHeroSavedNotice(false), 3000);
                       }}
-                      className="px-5 py-2.5 bg-stone-900 hover:bg-stone-800 text-white font-semibold rounded-xl text-xs flex items-center gap-2 shadow-xs transition-colors"
+                      className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-xl text-xs flex items-center gap-2 shadow-xs transition-colors"
                     >
-                      <Sparkles className="w-4 h-4 text-amber-400" />
+                      <Sparkles className="w-4 h-4 text-black" />
                       <span>{heroSavedNotice ? 'Saved to Storefront!' : 'Save & Publish Banner'}</span>
                     </button>
                   </div>
@@ -2214,9 +2214,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     />
                     <button
                       type="submit"
-                      className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold rounded-xl text-xs flex items-center gap-1.5 transition-colors"
+                      className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
                     >
-                      <Plus className="w-3.5 h-3.5" />
+                      <Plus className="w-3.5 h-3.5 text-black" />
                       <span>Add</span>
                     </button>
                   </form>
@@ -2227,21 +2227,21 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   <div className="flex items-center justify-between pb-3 border-b border-stone-100">
                     <div className="flex items-center gap-2">
                       <Key className="w-4 h-4 text-amber-700" />
-                      <h4 className="font-serif font-bold text-sm text-stone-900">
+                      <h4 className="font-serif font-bold text-sm text-black">
                         Google Cloud OAuth Client ID
                       </h4>
                     </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] bg-stone-100 text-stone-700 font-mono">
+                    <span className="px-2 py-0.5 rounded text-[10px] bg-stone-100 text-black font-bold font-mono">
                       GIS v1.0
                     </span>
                   </div>
 
-                  <p className="text-xs text-stone-600">
+                  <p className="text-xs text-stone-600 font-medium">
                     Configures the client-side Google Identity Services (GIS) Web SDK. You can specify a dedicated Google Cloud Console OAuth 2.0 Web Client ID:
                   </p>
 
                   <div className="space-y-2">
-                    <label className="block text-[11px] font-semibold text-stone-700 uppercase font-mono">
+                    <label className="block text-[11px] font-bold text-black uppercase font-mono">
                       Google OAuth 2.0 Client ID
                     </label>
                     <div className="flex gap-2">
@@ -2250,11 +2250,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                         value={googleClientId}
                         onChange={(e) => setGoogleClientId(e.target.value)}
                         placeholder="xxxxxxxxxxxx-xxxxxxxx.apps.googleusercontent.com"
-                        className="flex-1 px-3 py-2 border border-stone-300 rounded-xl font-mono text-xs focus:ring-1 focus:ring-amber-500"
+                        className="flex-1 px-3 py-2 border border-stone-300 rounded-xl font-mono text-xs focus:ring-1 focus:ring-amber-500 text-black"
                       />
                       <button
                         onClick={handleSaveClientIdSetting}
-                        className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white font-semibold rounded-xl text-xs transition-colors"
+                        className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-xl text-xs transition-colors cursor-pointer shadow-xs"
                       >
                         Save
                       </button>
@@ -2322,26 +2322,26 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       </>
     ) : (
       /* GOOGLE AUTHENTICATION GATEWAY FOR ADMIN PORTAL */
-      <div className="flex-1 bg-gradient-to-b from-stone-900 via-stone-950 to-stone-900 text-white p-6 sm:p-10 overflow-y-auto flex items-center justify-center">
+      <div className="flex-1 bg-white text-black p-6 sm:p-10 overflow-y-auto flex items-center justify-center">
         <div className="w-full max-w-md space-y-6">
           {/* Logo Crest */}
           <div className="text-center space-y-2">
-            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-600 p-0.5 shadow-xl shadow-amber-950/50 flex items-center justify-center">
-              <div className="w-full h-full bg-stone-950 rounded-[14px] flex items-center justify-center">
-                <span className="font-serif text-2xl font-bold text-amber-400 tracking-wider">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-600 p-0.5 shadow-md flex items-center justify-center">
+              <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center border border-amber-300">
+                <span className="font-serif text-2xl font-bold text-amber-800 tracking-wider">
                   eP
                 </span>
               </div>
             </div>
 
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400/90 font-semibold block">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-amber-800 font-bold block">
                 Naseem UAE Luxury Fragrances
               </span>
-              <h2 className="text-xl font-serif font-bold text-white tracking-wide mt-1">
+              <h2 className="text-xl font-serif font-bold text-black tracking-wide mt-1">
                 ePerfume Store Administration
               </h2>
-              <p className="text-xs text-stone-400 mt-1 max-w-xs mx-auto">
+              <p className="text-xs text-stone-600 font-medium mt-1 max-w-xs mx-auto">
                 Invercargill Boutique Operations · Google Identity Services Access Gateway
               </p>
             </div>
@@ -2349,28 +2349,28 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
           {/* Feedback Notices */}
           {authError && (
-            <div className="p-3 rounded-xl bg-red-950/80 border border-red-500/40 text-red-200 text-xs flex items-start gap-2.5 shadow-lg animate-fadeIn">
-              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-xl bg-red-50 border border-red-300 text-red-950 text-xs flex items-start gap-2.5 shadow-xs animate-fadeIn">
+              <AlertTriangle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold block">Authentication Required</span>
-                <span className="text-red-300/90 text-[11px]">{authError}</span>
+                <span className="font-bold block">Authentication Required</span>
+                <span className="text-red-800 text-[11px] font-medium">{authError}</span>
               </div>
             </div>
           )}
           {authSuccessNotice && (
-            <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2.5 shadow-lg animate-fadeIn">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span className="text-[11px] font-medium">{authSuccessNotice}</span>
+            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-950 text-xs flex items-center gap-2.5 shadow-xs animate-fadeIn">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span className="text-[11px] font-bold">{authSuccessNotice}</span>
             </div>
           )}
 
           {/* Primary Action: Direct Google Sign-In as Owner */}
-          <div className="bg-stone-900/90 border border-stone-800 rounded-2xl p-5 shadow-2xl space-y-4">
+          <div className="bg-stone-50 border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4">
             <div className="text-center space-y-1">
-              <span className="text-xs font-semibold text-stone-200">
+              <span className="text-xs font-bold text-black">
                 Sign In with Authorized Google Account
               </span>
-              <p className="text-[11px] text-stone-400">
+              <p className="text-[11px] text-stone-600 font-medium">
                 Click below to authenticate with your verified administrative Google account.
               </p>
             </div>
@@ -2378,21 +2378,21 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             {/* Primary Super Admin Button: Lovepreet Singh */}
             <button
               onClick={() => handleGoogleOneClickLogin('singh.lovepreet88@gmail.com', 'Lovepreet Singh')}
-              className="w-full p-3.5 rounded-xl bg-white hover:bg-stone-100 text-stone-900 font-semibold text-xs flex items-center justify-between transition-all shadow-md group border border-stone-200"
+              className="w-full p-3.5 rounded-xl bg-white hover:bg-stone-50 text-black font-bold text-xs flex items-center justify-between transition-all shadow-xs group border border-stone-300"
             >
               <div className="flex items-center gap-3">
                 <GoogleIcon className="w-5 h-5" />
                 <div className="text-left">
-                  <div className="text-xs font-bold text-stone-950 leading-tight">
+                  <div className="text-xs font-bold text-black leading-tight">
                     Continue as Lovepreet Singh
                   </div>
-                  <div className="text-[10px] text-stone-500 font-mono">
+                  <div className="text-[10px] text-stone-600 font-mono font-medium">
                     singh.lovepreet88@gmail.com
                   </div>
                 </div>
               </div>
 
-              <span className="px-2 py-0.5 rounded text-[9px] font-medium bg-amber-100 text-amber-900 border border-amber-300/50">
+              <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-black border border-amber-300">
                 Store Owner
               </span>
             </button>
@@ -2400,36 +2400,36 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             {/* Secondary Boutique Operations Button */}
             <button
               onClick={() => handleGoogleOneClickLogin('eperfumestorenz@gmail.com', 'Store Operations')}
-              className="w-full p-3 rounded-xl bg-stone-800 hover:bg-stone-750 text-stone-200 hover:text-white font-medium text-xs flex items-center justify-between transition-all border border-stone-700"
+              className="w-full p-3 rounded-xl bg-white hover:bg-stone-50 text-black font-bold text-xs flex items-center justify-between transition-all border border-stone-300"
             >
               <div className="flex items-center gap-3">
                 <GoogleIcon className="w-4 h-4" />
                 <div className="text-left">
-                  <div className="text-xs font-semibold leading-tight">
+                  <div className="text-xs font-bold leading-tight text-black">
                     Continue as Boutique Operations
                   </div>
-                  <div className="text-[10px] text-stone-400 font-mono">
+                  <div className="text-[10px] text-stone-600 font-mono font-medium">
                     eperfumestorenz@gmail.com
                   </div>
                 </div>
               </div>
 
-              <span className="text-[10px] text-stone-400">
+              <span className="text-[10px] text-stone-600 font-semibold">
                 Staff Admin
               </span>
             </button>
 
             {/* Google Identity Services Container */}
-            <div className="pt-2 border-t border-stone-800 text-center">
+            <div className="pt-2 border-t border-stone-200 text-center">
               <div id="gsiAdminButtonContainer" className="flex justify-center my-1 min-h-[44px]"></div>
-              <span className="text-[10px] text-stone-500">
+              <span className="text-[10px] text-stone-500 font-medium">
                 Google Identity Services (GIS) Web SDK Active
               </span>
             </div>
 
             {/* Sign in with another Google Email */}
-            <form onSubmit={handleCustomGoogleLogin} className="pt-3 border-t border-stone-800 space-y-2">
-              <label className="block text-[11px] text-stone-400 font-medium">
+            <form onSubmit={handleCustomGoogleLogin} className="pt-3 border-t border-stone-200 space-y-2">
+              <label className="block text-[11px] text-black font-semibold">
                 Or enter another authorized Google email:
               </label>
               <div className="flex gap-2">
@@ -2438,11 +2438,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   value={customEmailInput}
                   onChange={(e) => setCustomEmailInput(e.target.value)}
                   placeholder="admin@gmail.com"
-                  className="flex-1 px-3 py-2 bg-stone-950 border border-stone-700 rounded-xl text-xs text-white placeholder-stone-500 focus:outline-hidden focus:border-amber-400"
+                  className="flex-1 px-3 py-2 bg-white border border-stone-300 rounded-xl text-xs text-black placeholder-stone-400 focus:outline-hidden focus:border-amber-600 font-medium"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-stone-950 font-semibold rounded-xl text-xs transition-colors shrink-0"
+                  className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-xl text-xs transition-colors shrink-0 shadow-xs"
                 >
                   Verify
                 </button>
@@ -2450,20 +2450,20 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             </form>
 
             {/* Store Owner Emergency Passcode Toggle */}
-            <div className="pt-2 border-t border-stone-800">
+            <div className="pt-2 border-t border-stone-200">
               <button
                 type="button"
                 onClick={() => setShowEmergencyPin(!showEmergencyPin)}
-                className="text-[11px] text-stone-500 hover:text-stone-300 flex items-center gap-1.5 mx-auto"
+                className="text-[11px] text-stone-600 hover:text-black flex items-center gap-1.5 mx-auto font-medium cursor-pointer"
               >
-                <Key className="w-3 h-3 text-stone-400" />
+                <Key className="w-3 h-3 text-stone-600" />
                 <span>{showEmergencyPin ? 'Hide Emergency Passcode' : 'Store Owner Emergency Passcode'}</span>
               </button>
 
               {showEmergencyPin && (
-                <form onSubmit={handleEmergencyPinLogin} className="mt-3 space-y-2 p-3 rounded-xl bg-stone-950/80 border border-stone-800 animate-fadeIn">
-                  <span className="text-[10px] text-stone-400 block">
-                    Use owner passcode (<code className="text-amber-400">8888</code>) if Google popups/cookies are blocked inside the preview iframe:
+                <form onSubmit={handleEmergencyPinLogin} className="mt-3 space-y-2 p-3 rounded-xl bg-white border border-stone-300 animate-fadeIn">
+                  <span className="text-[10px] text-stone-700 font-medium block">
+                    Use owner passcode (<code className="text-amber-800 font-bold">8888</code>) if Google popups/cookies are blocked inside the preview iframe:
                   </span>
                   <div className="flex gap-2">
                     <input
@@ -2471,12 +2471,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                       value={emergencyPinInput}
                       onChange={(e) => setEmergencyPinInput(e.target.value)}
                       placeholder="Enter 4-digit passcode"
-                      className="flex-1 px-3 py-2 bg-stone-900 border border-stone-700 rounded-xl text-xs text-white font-mono text-center tracking-widest"
+                      className="flex-1 px-3 py-2 bg-white border border-stone-300 rounded-xl text-xs text-black font-mono text-center tracking-widest font-bold"
                       maxLength={10}
                     />
                     <button
                       type="submit"
-                      className="px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold rounded-xl text-xs"
+                      className="px-3 py-2 bg-white hover:bg-stone-50 text-black font-bold border border-stone-300 rounded-xl text-xs cursor-pointer"
                     >
                       Unlock
                     </button>
@@ -2487,9 +2487,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
           </div>
 
           {/* Security Policy Footnote */}
-          <div className="text-center text-[10px] text-stone-500 space-y-1">
+          <div className="text-center text-[10px] text-stone-600 font-medium space-y-1">
             <div className="flex items-center justify-center gap-1.5">
-              <Lock className="w-3 h-3 text-amber-500/80" />
+              <Lock className="w-3 h-3 text-amber-700" />
               <span>TLS 1.3 256-Bit Encrypted · Invercargill Boutiques NZ</span>
             </div>
             <div>
@@ -2502,10 +2502,10 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
         {/* Modal for Adding / Editing Product */}
         {(editingProduct || isCreatingProduct) && (
-          <div className="fixed inset-0 z-60 bg-stone-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-60 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-stone-200 max-h-[85vh] overflow-y-auto text-xs">
               <div className="flex justify-between items-center pb-3 border-b border-stone-200">
-                <h3 className="font-serif font-bold text-base text-stone-900">
+                <h3 className="font-serif font-bold text-base text-black">
                   {editingProduct ? 'Edit Naseem Product' : 'Add New Fragrance Product'}
                 </h3>
                 <button
@@ -2513,7 +2513,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     setEditingProduct(null);
                     setIsCreatingProduct(false);
                   }}
-                  className="p-1 text-stone-400 hover:text-stone-900"
+                  className="p-1 text-stone-400 hover:text-black cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -2741,7 +2741,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-stone-900 hover:bg-stone-800 text-amber-300 font-semibold rounded-lg"
+                    className="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg transition-colors shadow-xs"
                   >
                     Save Fragrance
                   </button>

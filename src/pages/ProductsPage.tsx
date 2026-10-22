@@ -249,10 +249,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
         </div>
       ) : (
         <div className="p-12 text-center rounded-2xl bg-white border border-stone-200 space-y-4">
-          <p className="text-lg font-serif font-bold text-stone-800">
+          <p className="text-lg font-serif font-bold text-black">
             No fragrances matched your criteria
           </p>
-          <p className="text-xs text-stone-500 max-w-sm mx-auto">
+          <p className="text-xs text-stone-600 max-w-sm mx-auto font-medium">
             Try adjusting your search query or clear the active filters to explore our full UAE catalog.
           </p>
           <button
@@ -262,7 +262,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
               setInStockOnly(false);
               setActiveCategory('all');
             }}
-            className="px-4 py-2 bg-stone-900 text-amber-300 rounded-lg text-xs font-semibold"
+            className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-black font-bold rounded-lg text-xs transition-colors shadow-xs"
           >
             Show All Products
           </button>
