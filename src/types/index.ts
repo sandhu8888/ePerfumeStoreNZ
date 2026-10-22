@@ -136,3 +136,31 @@ export interface GoogleAdminUser {
   authenticatedAt: string;
   token?: string;
 }
+
+export type ThemeId = 'royal-gold' | 'arabian-emerald' | 'rose-oud' | 'sapphire-night' | 'minimal-luxe';
+
+export interface ThemeDefinition {
+  id: ThemeId;
+  name: string;
+  tagline: string;
+  description: string;
+  primaryColor: string;
+  accentColor: string;
+  previewBg: string;
+  previewDots: [string, string, string];
+  cssVariables: {
+    primary: string;
+    primaryHover: string;
+    primaryText: string;
+    accent: string;
+    badgeBg: string;
+    badgeText: string;
+    badgeBorder: string;
+    tickerBg: string;
+    tickerText: string;
+    tickerBorder: string;
+    border: string;
+    surfaceSubtle: string;
+  };
+}
+

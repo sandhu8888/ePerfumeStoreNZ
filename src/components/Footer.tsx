@@ -1,21 +1,25 @@
 import React from 'react';
 import { Logo } from './Logo';
-import { MapPin, Phone, Mail, Clock, Truck, ShieldCheck, ArrowUpRight } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Truck, ShieldCheck, ArrowUpRight, Palette } from 'lucide-react';
 import { STORE_INFO } from '../data/initialData';
 import { ProductCategory } from '../types';
+import { useTheme } from '../context/ThemeContext';
 
 interface FooterProps {
   onNavigate: (tab: string, categoryFilter?: ProductCategory | 'all') => void;
   onOpenTracking: () => void;
   onOpenLoyalty?: () => void;
   onOpenAdmin: () => void;
+  onOpenThemeModal?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   onNavigate,
   onOpenTracking,
-  onOpenAdmin
+  onOpenAdmin,
+  onOpenThemeModal
 }) => {
+  const { themeConfig } = useTheme();
   return (
     <footer className="bg-white text-black border-t border-stone-200">
       {/* Trust & Guarantee Strip */}
@@ -225,6 +229,19 @@ export const Footer: React.FC<FooterProps> = ({
             <p className="text-xs text-stone-700 leading-relaxed mb-3">
               Full control over products, live inventory, customer orders, GST invoices, showcase gallery, and storefront hero banner.
             </p>
+            <button
+              type="button"
+              onClick={onOpenThemeModal}
+              className="w-full text-left px-3.5 py-2.5 rounded-lg bg-stone-50 hover:bg-stone-100 text-black border border-stone-300 text-xs font-semibold transition-all flex items-center justify-between group cursor-pointer shadow-xs mb-2"
+              title="Change Boutique Luxury Theme"
+            >
+              <span className="flex items-center gap-2">
+                <Palette className="w-4 h-4" style={{ color: themeConfig.primaryColor }} />
+                <span>Theme: {themeConfig.name}</span>
+              </span>
+              <span className="text-stone-500 text-[11px] group-hover:text-black font-semibold">Change →</span>
+            </button>
+
             <button
               type="button"
               onClick={onOpenAdmin}

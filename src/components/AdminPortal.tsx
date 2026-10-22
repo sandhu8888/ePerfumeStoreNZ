@@ -40,8 +40,10 @@ import {
   CheckCircle2,
   History,
   Copy,
-  EyeOff
+  EyeOff,
+  Palette
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 import { PerfumeIllustration } from './PerfumeIllustration';
 import {
   getStoredAdminSession,
@@ -114,7 +116,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   heroConfig,
   onUpdateHeroConfig
 }) => {
-  const [activeTab, setActiveTab] = useState<'inventory' | 'orders' | 'invoices' | 'gallery' | 'hero' | 'reports' | 'auth'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'orders' | 'invoices' | 'gallery' | 'hero' | 'theme' | 'reports' | 'auth'>('inventory');
+  const { currentTheme, themeConfig, setTheme, availableThemes } = useTheme();
   const [heroDraft, setHeroDraft] = useState<HeroBannerConfig>(() => ({ ...INITIAL_HERO_CONFIG, ...heroConfig }));
   const [heroSavedNotice, setHeroSavedNotice] = useState(false);
 
@@ -580,6 +583,20 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 <Sparkles className="w-4 h-4 text-amber-700" />
                 <span>Hero Banner Customizer</span>
                 <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-900 font-semibold">New</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('theme')}
+                className={`py-3 px-4 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
+                  activeTab === 'theme'
+                    ? 'border-amber-700 text-amber-950 font-semibold bg-white'
+                    : 'border-transparent text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <Palette className="w-4 h-4 text-amber-700" />
+                <span>Storefront Theme</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] bg-stone-200 text-black font-semibold">
+                  {themeConfig.name}
+                </span>
               </button>
               <button
                 onClick={() => setActiveTab('reports')}
@@ -1969,6 +1986,149 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               </div>
             </div>
           )}
+
+          {/* TAB: STOREFRONT THEME & BRANDING */}
+          {activeTab === 'theme' && (
+            <div className="space-y-6">
+              {/* Theme Header & Overview */}
+              <div className="p-6 bg-white rounded-2xl border border-stone-200 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Palette className="w-5 h-5 text-amber-700" />
+                      <h2 className="text-lg font-serif font-bold text-black">Storefront Luxury Theme & Styling</h2>
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-black border border-amber-300">
+                        Live Sync
+                      </span>
+                    </div>
+                    <p className="text-xs text-stone-700 mt-1 max-w-2xl">
+                      Select the signature aesthetic for Naseem Perfumes Invercargill. All themes preserve a pristine pure white canvas and crisp high-contrast black typography, while dynamically adapting luxury accents, buttons, glowing borders, and provenance badges.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 px-4 py-2 bg-stone-50 rounded-xl border border-stone-200">
+                    <span className="text-xs text-stone-600 font-medium">Active Theme:</span>
+                    <span className="text-xs font-bold text-black flex items-center gap-1.5">
+                      <span
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: themeConfig.primaryColor }}
+                      />
+                      {themeConfig.name}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Theme Selector Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {availableThemes.map((thm) => {
+                  const isActive = currentTheme === thm.id;
+                  return (
+                    <div
+                      key={thm.id}
+                      onClick={() => setTheme(thm.id)}
+                      className={`relative p-5 rounded-2xl border-2 transition-all cursor-pointer bg-white flex flex-col justify-between hover:shadow-md ${
+                        isActive
+                          ? 'border-black ring-2 ring-amber-400 shadow-md'
+                          : 'border-stone-200 hover:border-stone-400'
+                      }`}
+                    >
+                      <div>
+                        {/* Top bar with color dots and active badge */}
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-1.5">
+                            {thm.previewDots.map((dot, idx) => (
+                              <span
+                                key={idx}
+                                className="w-4 h-4 rounded-full border border-black/10 shadow-xs"
+                                style={{ backgroundColor: dot }}
+                              />
+                            ))}
+                          </div>
+                          {isActive ? (
+                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-black text-white flex items-center gap-1 shadow-xs">
+                              <Check className="w-3 h-3 text-amber-400" />
+                              <span>Active Default</span>
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-semibold text-stone-500 hover:text-black">
+                              Click to Activate
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Title & Tagline */}
+                        <h3 className="font-serif font-bold text-base text-black">{thm.name}</h3>
+                        <p className="text-xs font-semibold text-amber-900 mt-0.5">{thm.tagline}</p>
+                        <p className="text-xs text-stone-600 mt-2 leading-relaxed">{thm.description}</p>
+
+                        {/* Visual Palette Preview */}
+                        <div className="mt-4 p-3 rounded-xl border border-stone-200 bg-stone-50/70 space-y-2">
+                          <div className="text-[10px] font-mono uppercase tracking-wider text-stone-500">
+                            Components Preview
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="px-2.5 py-1 rounded-md text-xs font-bold text-white shadow-xs"
+                              style={{
+                                backgroundColor: thm.cssVariables.primary,
+                                color: thm.cssVariables.primaryText
+                              }}
+                            >
+                              Add to Bag
+                            </span>
+                            <span
+                              className="px-2 py-0.5 rounded text-[11px] font-bold border"
+                              style={{
+                                backgroundColor: thm.cssVariables.badgeBg,
+                                color: thm.cssVariables.badgeText,
+                                borderColor: thm.cssVariables.badgeBorder
+                              }}
+                            >
+                              UAE Exclusive
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Button */}
+                      <div className="mt-5 pt-3 border-t border-stone-100 flex items-center justify-between">
+                        <span className="text-[11px] font-mono text-stone-500">
+                          {thm.id}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTheme(thm.id);
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            isActive
+                              ? 'bg-black text-white'
+                              : 'bg-stone-100 hover:bg-stone-200 text-black'
+                          }`}
+                        >
+                          {isActive ? 'Theme In Use' : 'Apply to Store'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Design Guarantee Banner */}
+              <div className="p-4 bg-white rounded-xl border border-stone-200 text-xs text-stone-700 flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-bold text-black">Pristine White Background & Black Font Enforced</div>
+                  <div className="text-stone-600 mt-0.5">
+                    In compliance with the store branding mandate, changing the theme dynamically alters luxury accent colors, buttons, glowing borders, badges, and announcements, while all page backgrounds remain crisp pure white with high-contrast black typography.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'reports' && (
             <div className="space-y-6">
               {/* Stat Cards */}

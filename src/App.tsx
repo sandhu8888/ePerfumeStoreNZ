@@ -13,16 +13,18 @@ import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { OrderTrackingModal } from './components/OrderTrackingModal';
 import { AdminPortal } from './components/AdminPortal';
+import { ThemeModal } from './components/ThemeModal';
 import { HomePage } from './pages/HomePage';
 import { ProductsPage } from './pages/ProductsPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
-import { Check, Search, X, ShieldCheck } from 'lucide-react';
+import { Check, Search, X, ShieldCheck, Palette } from 'lucide-react';
 
 export default function App() {
   // Navigation State
   const [activeTab, setActiveTab] = useState<'home' | 'products' | 'about' | 'contact'>('home');
   const [categoryFilter, setCategoryFilter] = useState<ProductCategory | 'all'>('all');
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
 
   // Persistence State with fallback safety
   const [products, setProducts] = useState<Product[]>(() => {
@@ -325,6 +327,7 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
         onOpenAdmin={() => setIsAdminOpen(true)}
         onSearchClick={() => setIsSearchOpen(true)}
+        onOpenThemeModal={() => setIsThemeModalOpen(true)}
       />
 
       {/* Active Page View */}
@@ -354,8 +357,17 @@ export default function App() {
         {activeTab === 'contact' && <ContactPage />}
       </main>
 
-      {/* Floating Instant Admin Portal Access Button (Bottom Left) */}
-      <aside aria-label="Store administration shortcut" className="fixed bottom-5 left-5 z-40">
+      {/* Floating Shortcuts (Theme Switcher & Admin Portal Access) */}
+      <aside aria-label="Store administration shortcut" className="fixed bottom-5 left-5 z-40 flex items-center gap-2">
+        <button
+          onClick={() => setIsThemeModalOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-stone-50 text-black text-xs font-bold rounded-full shadow-xl border-2 border-stone-300 backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer group"
+          title="Change Boutique Theme"
+        >
+          <Palette className="w-3.5 h-3.5 text-amber-700" />
+          <span className="hidden sm:inline">Theme</span>
+        </button>
+
         <button
           onClick={() => setIsAdminOpen(true)}
           className="flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-stone-50 text-black text-xs font-bold rounded-full shadow-xl border-2 border-stone-300 backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer group"
@@ -372,6 +384,7 @@ export default function App() {
         onNavigate={handleNavigate}
         onOpenTracking={() => handleOpenTrackingFromAnywhere()}
         onOpenAdmin={() => setIsAdminOpen(true)}
+        onOpenThemeModal={() => setIsThemeModalOpen(true)}
       />
 
       {/* Quick Search Modal */}
@@ -492,6 +505,12 @@ export default function App() {
           setHeroConfig(newConfig);
           showToast('Hero banner updated successfully');
         }}
+      />
+
+      {/* Boutique Luxury Theme Customizer Modal */}
+      <ThemeModal
+        isOpen={isThemeModalOpen}
+        onClose={() => setIsThemeModalOpen(false)}
       />
     </div>
   );

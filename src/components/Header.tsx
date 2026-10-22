@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Logo } from './Logo';
-import { ShoppingBag, Search, Menu, X, ShieldCheck, Phone } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, ShieldCheck, Phone, Palette } from 'lucide-react';
 import { ProductCategory } from '../types';
+import { useTheme } from '../context/ThemeContext';
 
 interface HeaderProps {
   activeTab: string;
@@ -11,6 +12,7 @@ interface HeaderProps {
   onOpenLoyalty?: () => void;
   onOpenAdmin: () => void;
   onSearchClick: () => void;
+  onOpenThemeModal?: () => void;
   userPoints?: number;
 }
 
@@ -20,10 +22,12 @@ export const Header: React.FC<HeaderProps> = ({
   cartCount,
   onOpenCart,
   onOpenAdmin,
-  onSearchClick
+  onSearchClick,
+  onOpenThemeModal
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const { currentTheme, themeConfig } = useTheme();
 
   const handleNavClick = (tab: string) => {
     onNavigate(tab);
@@ -131,6 +135,16 @@ export const Header: React.FC<HeaderProps> = ({
               <Search className="w-5 h-5" />
             </button>
 
+            {/* Boutique Theme Selector Header Button */}
+            <button
+              onClick={onOpenThemeModal}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-black hover:bg-stone-50 bg-white border border-stone-300 rounded-lg transition-colors whitespace-nowrap shrink-0 shadow-xs cursor-pointer group"
+              title={`Active Theme: ${themeConfig.name} (Click to change)`}
+            >
+              <Palette className="w-3.5 h-3.5" style={{ color: themeConfig.primaryColor }} />
+              <span className="hidden sm:inline font-bold">Theme</span>
+            </button>
+
             {/* Admin Portal Direct Header Button */}
             <button
               onClick={onOpenAdmin}
@@ -235,6 +249,17 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="pt-3 border-t border-stone-100 flex flex-col gap-2">
+            <button
+              onClick={() => {
+                onOpenThemeModal?.();
+                setMobileMenuOpen(false);
+              }}
+              className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-stone-50 hover:bg-stone-100 text-black border border-stone-200 text-xs font-semibold transition-colors cursor-pointer"
+            >
+              <Palette className="w-4 h-4" style={{ color: themeConfig.primaryColor }} />
+              <span>Change Boutique Theme ({themeConfig.name})</span>
+            </button>
+
             <button
               onClick={() => {
                 onOpenAdmin();
